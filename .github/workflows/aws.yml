@@ -45,12 +45,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Grant execute permission for Gradlew
-        run: chmod +x ./gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew build
-
       - name: Check out code
         uses: actions/checkout@v4
 
@@ -59,6 +53,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+
+      - name: Grant execute permission for Gradlew
+        run: chmod +x ./gradlew
 
       - name: Build with Gradle
         run: ./gradlew build
