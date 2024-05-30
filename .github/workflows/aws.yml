@@ -35,7 +35,7 @@ env:
   ECR_REPOSITORY: envedu_device_repo
   ECS_SERVICE: EnvEduDeviceContainerService
   ECS_CLUSTER: EnvEdu_Device_Cluster
-  ECS_TASK_DEFINITION: arn:aws:ecs:ap-northeast-2:221523387111:task-definition/EnvEduDeviceFamily:1
+  ECS_TASK_DEFINITION: EnvEduDeviceFamily.json
   CONTAINER_NAME: EnvEduDeviceContainer
 
 permissions:
