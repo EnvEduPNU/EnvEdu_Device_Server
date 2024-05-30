@@ -9,15 +9,7 @@
             "image": "221523387111.dkr.ecr.ap-northeast-2.amazonaws.com/envedu_device_repo:latest",
             "cpu": 256,
             "memory": 512,
-            "essential": true,
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/EnvEduDeviceFamily",
-                    "awslogs-region": "ap-northeast-2",
-                    "awslogs-stream-prefix": "ecs"
-                }
-            }
+            "essential": true
         }
     ],
     "requiresCompatibilities": ["FARGATE"],
