@@ -64,9 +64,11 @@ jobs:
       - name: List files
         run: ls -alh build/libs/
 
-      - name: Build Docker image
-        run: docker build . --file Dockerfile --tag ${{ github.sha }}
-        continue-on-error: false  # 이 단계에서 오류 발생 시, 다음 단계로 진행되지 않음
+      - name: Upload JAR for deployment
+        uses: actions/upload-artifact@v2
+        with:
+          name: jar-files
+          path: build/libs/*.jar
 
 
 
@@ -85,6 +87,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download JAR for deployment
+        uses: actions/download-artifact@v2
+        with:
+          name: jar-files
+          path: build/libs
 
       - name: Login to Amazon ECR
         id: login-ecr
