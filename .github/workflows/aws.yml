@@ -65,6 +65,10 @@ jobs:
         run: docker build . --file Dockerfile --tag ${{ github.sha }}
         continue-on-error: false  # 이 단계에서 오류 발생 시, 다음 단계로 진행되지 않음
 
+      - name: List files
+        run: ls -alh build/libs/
+
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest

@@ -8,7 +8,7 @@ FROM openjdk:17-slim
 WORKDIR /app
 
 # Copy the built jar file from your host into the container
-COPY build/libs/*.jar /app/deviceServer-0.0.1-SNAPSHOT.jar
+COPY build/libs/*.jar /app/
 
 # Command to run the application
 CMD ["java", "-jar", "/app/deviceServer-0.0.1-SNAPSHOT.jar"]
