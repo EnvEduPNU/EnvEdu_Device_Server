@@ -62,7 +62,7 @@ jobs:
         continue-on-error: false  # 이 단계에서 오류 발생 시, 다음 단계로 진행되지 않음
 
       - name: Build Docker image
-        run: docker build . --file Dockerfile --tag $IMAGE_TAG
+        run: docker build . --file Dockerfile --tag ${{ github.sha }}
         continue-on-error: false  # 이 단계에서 오류 발생 시, 다음 단계로 진행되지 않음
 
   deploy:
