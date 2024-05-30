@@ -52,6 +52,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
+          distribution: 'Adoptium'
 
       - name: Build with Gradle
         run: ./gradlew build
