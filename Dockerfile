@@ -1,10 +1,15 @@
 FROM ubuntu:latest
 LABEL authors="kl204"
 
-FROM openjdk:17
-COPY build/libs/*.jar /deviceServer-0.0.1-SNAPSHOT.jar
+# Use the official OpenJDK image for a base
+FROM openjdk:17-slim
 
-CMD ["java", "-jar", "/deviceServer-0.0.1-SNAPSHOT.jar"]
+# Set the working directory inside the container
+WORKDIR /app
 
-ENTRYPOINT ["top", "-b"]
-#test00
+# Copy the built jar file from your host into the container
+COPY build/libs/*.jar /app/deviceServer-0.0.1-SNAPSHOT.jar
+
+# Command to run the application
+CMD ["java", "-jar", "/app/deviceServer-0.0.1-SNAPSHOT.jar"]
+
