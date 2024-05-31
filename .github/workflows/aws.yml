@@ -78,6 +78,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download JAR for deployment
+        uses: actions/download-artifact@v2
+        with:
+          name: jar-files
+          path: build/libs
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
