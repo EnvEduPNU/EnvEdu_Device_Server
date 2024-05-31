@@ -11,6 +11,6 @@ public class TestController {
     @CrossOrigin(origins = "*")
     @GetMapping("/test")
     public ResponseEntity<?> testMethod() {
-        return ResponseEntity.ok().body("yes");  // HTTP 200 OK 상태 코드 반환
+        return ResponseEntity.ok().body("yess");  // HTTP 200 OK 상태 코드 반환
     }
 }
