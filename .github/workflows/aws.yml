@@ -94,7 +94,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          scp -o StrictHostKeyChecking=no ./build/libs/*.jar ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:/home/${{ env.EC2_USER }}/deviceServer-0.0.1-SNAPSHOT.jar
+          scp -o StrictHostKeyChecking=no ./build/libs/*.jar ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:/home/${{ env.EC2_USER }}/build/libs/deviceServer-0.0.1-SNAPSHOT.jar
           ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "docker pull my-app:${{ github.sha }} && docker run -d -p 8080:8080 my-app:${{ github.sha }}"
 
 
