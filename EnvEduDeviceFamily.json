@@ -9,7 +9,13 @@
             "image": "221523387111.dkr.ecr.ap-northeast-2.amazonaws.com/envedu_device_repo:latest",
             "cpu": 256,
             "memory": 512,
-            "essential": true
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080
+                }
+            ]
         }
     ],
     "requiresCompatibilities": ["FARGATE"],
