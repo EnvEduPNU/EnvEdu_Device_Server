@@ -24,7 +24,7 @@
 #    See the documentation for each action used below for the recommended IAM policies for this IAM user,
 #    and best practices on handling the access key credentials.
 
-name: Deploy to Amazon EC2
+name: Deploy to Amazon ECS
 
 on:
   push:
@@ -32,9 +32,11 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  EC2_HOST: ${{ secrets.EC2_HOST }}  # EC2 인스턴스의 IP 또는 도메인
-  EC2_USER: ec2-user  # EC2 인스턴스의 사용자 이름
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # EC2 인스턴스 접속을 위한 SSH 개인 키
+  ECR_REPOSITORY: envedu_device_repo
+  ECS_SERVICE: EnvEduDeviceContainerService
+  ECS_CLUSTER: EnvEdu_Device_Cluster
+  ECS_TASK_DEFINITION: EnvEduDeviceFamily.json
+  CONTAINER_NAME: EnvEduDeviceContainer
 
 permissions:
   contents: read
@@ -57,6 +59,7 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+        continue-on-error: false  # 이 단계에서 오류 발생 시, 다음 단계로 진행되지 않음
 
       - name: List files
         run: ls -alh build/libs/
@@ -66,6 +69,8 @@ jobs:
         with:
           name: jar-files
           path: build/libs/*.jar
+
+
 
   deploy:
     runs-on: ubuntu-latest
@@ -83,9 +88,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build Docker image
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push Docker image to ECR
         run: |
-          docker build -t my-app:${{ github.sha }} .
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY=my-app
+          IMAGE_TAG=${{ github.sha }}
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.5.3
@@ -97,12 +109,6 @@ jobs:
 
       - name: Deploy to EC2 Docker Runner
         run: |
-          # SSH into EC2 instance and run the Docker container directly
-          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "sudo docker run -d -p 8080:8080 --name my-container my-app:${{ github.sha }}"
-
-
-
-
-
-
-
+          # SSH into EC2 instance and pull the Docker image from ECR, then run the Docker container
+          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && sudo docker run -d -p 8080:8080 --name my-container $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+  
