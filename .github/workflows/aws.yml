@@ -31,6 +31,8 @@ on:
     branches: [ "main" ]
 
 env:
+  EC2_USER: ec2-user
+  EC2_HOST: 43.202.179.34
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: envedu_device_repo
   ECS_SERVICE: EnvEduDeviceContainerService
