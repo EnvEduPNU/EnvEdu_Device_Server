@@ -98,7 +98,7 @@ jobs:
       - name: Deploy to EC2 Docker Runner
         run: |
           # SSH into EC2 instance and run the Docker container directly
-          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "docker run -d -p 8080:8080 --name my-container my-app:${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "sudo docker run -d -p 8080:8080 --name my-container my-app:${{ github.sha }}"
 
 
 
