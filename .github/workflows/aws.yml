@@ -34,8 +34,6 @@ env:
   EC2_USER: ec2-user
   EC2_HOST: 43.202.179.34
   AWS_REGION: ap-northeast-2
-  ECR_REGISTRY: 221523387111.dkr.ecr.ap-northeast-2.amazonaws.com
-  ECR_REPOSITORY: envedu_device_repo
   CONTAINER_NAME: EnvEduDeviceContainer
 
 permissions:
@@ -117,6 +115,9 @@ jobs:
 
       - name: Deploy to EC2 Docker Runner
         run: |
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY=my-app
+          IMAGE_TAG=${{ github.sha }}
           # SSH into EC2 instance and pull the Docker image from ECR, then run the Docker container
           ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && sudo docker run -d -p 8080:8080 --name my-container $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
   
