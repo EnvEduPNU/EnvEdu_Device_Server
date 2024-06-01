@@ -78,7 +78,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: jar-files
-          path: /runner/work/EnvEdu_Device_Server/EnvEdu_Device_Server/build/libs
+          path: build/libs
+
+      - name: List files
+        run: ls -alh build/libs/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
