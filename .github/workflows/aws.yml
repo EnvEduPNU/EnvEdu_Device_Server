@@ -80,9 +80,6 @@ jobs:
           name: jar-files
           path: build/libs
 
-      - name: List files
-        run: ls -alh build/libs/
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -95,9 +92,12 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: List files
+        run: ls -alh build/libs/
+
       - name: Deploy to EC2
         run: |
-          scp -o StrictHostKeyChecking=no ./build/libs/*.jar ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:/home/${{ env.EC2_USER }}/build/libs/deviceServer-0.0.1-SNAPSHOT.jar
+          scp -o StrictHostKeyChecking=no ./runner/work/EnvEdu_Device_Server/EnvEdu_Device_Server/build/libs/*.jar ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:/home/runner/work/EnvEdu_Device_Server/EnvEdu_Device_Server/build/libs/deviceServer-0.0.1-SNAPSHOT.jar
           ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "docker pull my-app:${{ github.sha }} && docker run -d -p 8080:8080 my-app:${{ github.sha }}"
 
 
