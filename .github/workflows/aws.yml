@@ -95,10 +95,12 @@ jobs:
       - name: List files
         run: ls -alh build/libs/
 
-      - name: Deploy to EC2
+      - name: Deploy to EC2 Docker Runner
         run: |
-          scp -o StrictHostKeyChecking=no ./build/libs/*.jar ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:/home/${{ env.EC2_USER }}/build/libs/deviceServer-0.0.1-SNAPSHOT.jar
-          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "docker pull my-app:${{ github.sha }} && docker run -d -p 8080:8080 my-app:${{ github.sha }}"
+          # SSH into EC2 instance and run the Docker container directly
+          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "docker run -d -p 8080:8080 --name my-container my-app:${{ github.sha }}"
+
+
 
 
 
