@@ -119,5 +119,9 @@ jobs:
           ECR_REPOSITORY=my-app
           IMAGE_TAG=${{ github.sha }}
           # SSH into EC2 instance and pull the Docker image from ECR, then run the Docker container
-          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && sudo docker run -d -p 8080:8080 --name my-container $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} "\
+            aws ecr get-login-password --region ap-northeast-2 | sudo docker login --username AWS --password-stdin $ECR_REGISTRY && \
+            sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && \
+            sudo docker run -d -p 8080:8080 --name my-container $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
   
