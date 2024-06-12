@@ -52,6 +52,10 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
+      - name: Create application.yml
+        run: |
+           echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+
       - name: Grant execute permission for Maven
         run: chmod +x ./mvnw
 
