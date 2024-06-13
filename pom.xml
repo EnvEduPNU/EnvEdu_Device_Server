@@ -29,16 +29,14 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <version>1.12.714</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.derjust</groupId>
-            <artifactId>spring-data-dynamodb</artifactId>
-            <version>5.1.0</version>
-        </dependency>
+
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/software.amazon.awssdk/dynamodb &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>software.amazon.awssdk</groupId>-->
+<!--            <artifactId>dynamodb</artifactId>-->
+<!--            <version>2.25.50</version>-->
+<!--        </dependency>-->
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,6 +57,30 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
         </dependency>
+
+
+        <!-- Spring Boot 스타터 데이터 R2DBC -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+        </dependency>
+
+        <!-- R2DBC MySQL -->
+        <dependency>
+            <groupId>dev.miku</groupId>
+            <artifactId>r2dbc-mysql</artifactId>
+            <version>0.8.2.RELEASE</version> <!-- 사용하는 버전에 따라 변경 필요 -->
+        </dependency>
+
+
+        <!-- Optional: Spring Boot DevTools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

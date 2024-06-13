@@ -5,8 +5,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+/**
+ * Client 에서 들어 오는 사용자의 이름과 password로 인증하는 필터 메서드
+ */
+@Component
 public class CustomReactiveAuthenticationManager implements ReactiveAuthenticationManager {
 
     @Override

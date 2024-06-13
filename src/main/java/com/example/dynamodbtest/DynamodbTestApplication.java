@@ -13,13 +13,4 @@ public class DynamodbTestApplication {
         SpringApplication.run(DynamodbTestApplication.class, args);
     }
 
-    @Bean
-    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-        return builder.routes()
-                .route(r -> r.path("/api/**")
-                        .filters(f -> f.addRequestHeader("Hello", "World"))
-                        .uri("http://localhost:8080"))
-                .build();
-    }
-
 }
