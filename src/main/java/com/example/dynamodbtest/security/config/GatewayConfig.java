@@ -32,7 +32,7 @@ public class GatewayConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
 
-        log.info("Gateway 설정 완료!!");
+        log.info("Gateway 설정 완료!!!");
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**")
