@@ -44,7 +44,7 @@ public class GatewayConfig {
 
                             return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
                         }))
-                        .uri("http://localhost:8081"))
+                        .uri("https://server.greenseed.or.kr"))
                 .build();
     }
 }
