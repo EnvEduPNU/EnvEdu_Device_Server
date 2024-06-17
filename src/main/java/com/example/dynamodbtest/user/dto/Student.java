@@ -4,11 +4,8 @@ import com.example.dynamodbtest.user.enumerate.Gender;
 import com.example.dynamodbtest.user.enumerate.Role;
 import com.example.dynamodbtest.user.enumerate.State;
 import lombok.Builder;
-import java.sql.Date;
-import java.util.List;
+import java.time.LocalDate;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +16,7 @@ import lombok.Setter;
 public class Student extends User {
 
     @Builder(builderMethodName = "studentBuilder")
-    public Student(String username, String password, String email, Date birthday, Role role, Gender gender, State state, String nickname) {
+    public Student(String username, String password, String email, LocalDate birthday, Role role, Gender gender, State state, String nickname) {
         super(username, password, email, birthday, role, gender, state, nickname);
     }
 

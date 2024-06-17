@@ -7,13 +7,10 @@ import com.example.dynamodbtest.user.enumerate.Role;
 import com.example.dynamodbtest.user.enumerate.State;
 import lombok.*;
 
-import java.sql.Date;
-import java.util.List;
+import java.time.LocalDate;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
-import reactor.core.publisher.Mono;
 
 
 
@@ -24,12 +21,12 @@ import reactor.core.publisher.Mono;
 public class Educator extends User {
 
     @Builder(builderMethodName = "educatorBuilder")
-    public Educator(String username, String password, String email, Date birthday, Role role, Gender gender, State state, String nickname, IsAuthorized isAuthorized)
+    public Educator(String username, String password, String email, LocalDate birthday, Role role, Gender gender, State state, String nickname, IsAuthorized isAuthorized)
     {
         super(username, password, email, birthday, role, gender, state, nickname);
         this.isAuthorized = isAuthorized;
     }
-//
+
 //    @Id
 //    private Long idEducator;
 

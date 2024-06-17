@@ -22,7 +22,7 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // 여기에 사용자 권한 설정 로직을 추가합니다.
         // 예를 들어, 사용자 역할(role)을 단일 문자열로 처리하려면 다음과 같이 할 수 있습니다.
-        return Collections.singletonList((GrantedAuthority) () -> "ROLE_" + user.getRole().name());
+        return Collections.singletonList((GrantedAuthority) () -> user.getRole().name());
     }
 
     @Override

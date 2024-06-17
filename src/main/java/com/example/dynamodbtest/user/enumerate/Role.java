@@ -18,7 +18,7 @@ public enum Role {
                     .gender(registerDTO.getGender())
                     .role(registerDTO.getRole())
                     .state(State.ACTIVE)
-                    .birthday(registerDTO.getBirthday())
+                    .birthday(registerDTO.getBirthday().toLocalDate())
                     .nickname(registerDTO.getNickname())
                     .build();
         }
@@ -33,7 +33,7 @@ public enum Role {
                     .role(registerDTO.getRole())
                     .state(State.ACTIVE)
                     .isAuthorized(IsAuthorized.NO)
-                    .birthday(registerDTO.getBirthday())
+                    .birthday(registerDTO.getBirthday().toLocalDate())
                     .nickname(registerDTO.getNickname())
                     .build();
         }
