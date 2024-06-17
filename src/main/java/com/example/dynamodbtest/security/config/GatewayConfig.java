@@ -35,9 +35,8 @@ public class GatewayConfig {
         log.info("Gateway 설정 완료!!!");
 
         return builder.routes()
-                .route("example_route", r -> r.path("/login/**")
+                .route("example_route", r -> r.path("/**")
                         .filters(f -> f
-                                .rewritePath("/login/(?<segment>.*)", "/test/${segment}")
                                 .filter((exchange, chain) -> {
                             ServerHttpRequest request = exchange.getRequest();
                             ServerHttpRequest.Builder requestBuilder = request.mutate();
