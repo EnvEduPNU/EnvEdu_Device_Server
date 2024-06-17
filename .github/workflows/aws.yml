@@ -135,4 +135,5 @@ jobs:
               sudo docker stop my-container || true && \
               sudo docker rm my-container || true && \
               sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && \
-              sudo docker run -d -p 8080:8080 --name my-container $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+              sudo docker run -d -p 8080:8080 --name my-container $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && \
+              sudo systemctl restart nginx"
