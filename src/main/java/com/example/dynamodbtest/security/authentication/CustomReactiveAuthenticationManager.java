@@ -1,25 +1,37 @@
 package com.example.dynamodbtest.security.authentication;
 
+import com.example.dynamodbtest.security.principal.CustomUserDetails;
+import com.example.dynamodbtest.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Component
+@RequiredArgsConstructor
 public class CustomReactiveAuthenticationManager implements ReactiveAuthenticationManager {
 
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+
     @Override
-    public Mono<Authentication> authenticate(Authentication authentication) {
+    public Mono<Authentication> authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = String.valueOf(authentication.getCredentials());
 
-        // 여기서는 예시로, 유저네임과 패스워드가 "admin"일 때만 인증을 통과시키는 간단한 로직을 구현합니다.
-        if ("admin".equals(username) && "admin".equals(password)) {
-            User user = new User(username, password, AuthorityUtils.createAuthorityList("ROLE_ADMIN"));
-            return Mono.just(new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities()));
-        } else {
-            return Mono.error(new RuntimeException("Authentication failed"));
-        }
+        return userRepository.findByUsername(username)
+                .flatMap(user -> {
+                    if (passwordEncoder.matches(password, user.getPassword())) {
+                        CustomUserDetails userDetails = new CustomUserDetails(user);
+                        return Mono.just(new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities()));
+                    } else {
+                        return Mono.error(new RuntimeException("Invalid credentials"));
+                    }
+                });
+
     }
 }

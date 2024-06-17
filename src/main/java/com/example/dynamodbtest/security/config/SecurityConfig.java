@@ -1,84 +1,79 @@
 package com.example.dynamodbtest.security.config;
 
-import com.example.dynamodbtest.security.authentication.CustomReactiveAuthenticationManager;
-import com.example.dynamodbtest.security.context.CustomSecurityContextRepository;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Spring Cloud Security 설정
  * ver 6.1
  * @author 부산대 과학교육연구소 연구보조원 김선규
  */
+@Configuration
 @EnableWebFluxSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, CustomSecurityContextRepository securityContextRepository) {
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 
-        http    .csrf(ServerHttpSecurity.CsrfSpec::disable);
-
-        // 도메인 간 접근 시 보안 접근 Path 관리
         http
-                .cors(cors -> cors.configurationSource(request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("https://example.com"));
-                    config.setAllowedMethods(Arrays.asList("GET", "POST"));
-                    return config;
-                    }));
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable);
 
-        // Client 에서 접근시 기본 인증 과정
+        http.csrf(ServerHttpSecurity.CsrfSpec::disable);
+
         http
-                .httpBasic((httpBasic) ->
-                httpBasic
-                        // Credential 을 가지고 인증
-                        .authenticationManager(new CustomReactiveAuthenticationManager())
-                        // Token 을 가지고 인증
-                        .securityContextRepository(securityContextRepository)
-        );
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        // 인증 완료 한 후 인가 과정
         http
-
                 .authorizeExchange((exchanges) ->
-                        exchanges
-                                // any URL that starts with /admin/ requires the role "ROLE_ADMIN"
-                                .pathMatchers("/admin/**").hasRole("ADMIN")
-                                // a POST to /users requires the role "USER_POST"
-                                .pathMatchers(HttpMethod.POST, "/users").hasAuthority("USER_POST")
-
-
-// ---> 아래의 방식으로도 인증/인가를 사용할 수 있다. (spring-security-docs 6.3.0 API)
-                                // a request to /users/{username} requires the current authentication's username
-                                // to be equal to the {username}
-//                                .pathMatchers("/users/{username}").access((authentication, context) ->
-//                                        authentication
-//                                                .map(Authentication::getName)
-//                                                .map((username) -> username.equals(context.getVariables().get("username")))
-//                                                .map(AuthorizationDecision::new)
-//                                )
-                                // allows providing a custom matching strategy that requires the role "ROLE_CUSTOM"
-                                .matchers(customMatcher()).hasRole("CUSTOM")
-                                // any other request requires the user to be authenticated
-                                .anyExchange().authenticated()
+                                exchanges
+//                                .pathMatchers("/**").authenticated()
+//                                .pathMatchers(HttpMethod.POST, "/users").hasAuthority("USER_POST")
+//                                .matchers(customMatcher()).hasRole("CUSTOM")
+                                        .pathMatchers("/**").permitAll()
+                                        .anyExchange().authenticated()
                 );
 
         return http.build();
     }
 
-
-    // 사용자 정의 매처
-    public ServerWebExchangeMatcher customMatcher() {
-        return exchange -> exchange.getRequest().getPath().value().startsWith("/custom")
-                ? ServerWebExchangeMatcher.MatchResult.match()
-                : ServerWebExchangeMatcher.MatchResult.notMatch();
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));  // 허용할 출처
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));  // 허용할 HTTP 메소드
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "Your-Custom-Header"));  // 허용할 헤더
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));  // 브라우저에서 접근 가능한 헤더
+        configuration.setAllowCredentials(true);  // 인증 정보(쿠키, HTTP 인증, SSL 인증 등) 포함 허용
+        configuration.setMaxAge(3600L);  // 사전 요청 결과 최대 나이(초)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/login/**", configuration);
+        source.registerCorsConfiguration("/seed/**", configuration);
+        source.registerCorsConfiguration("/mydata/**", configuration);
+        source.registerCorsConfiguration("/datafolder/**", configuration);
+        source.registerCorsConfiguration("/ocean-quality/**", configuration);
+        source.registerCorsConfiguration("/air-quality/**", configuration);
+        source.registerCorsConfiguration("/ws/**", null);
+        return source;
+    }
+
 }
