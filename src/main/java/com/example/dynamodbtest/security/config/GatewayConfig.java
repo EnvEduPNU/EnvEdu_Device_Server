@@ -43,7 +43,7 @@ public class GatewayConfig {
                                     log.info("문제 생길만한 요청헤더: " + request.getHeaders());
 
                                     request.getHeaders().forEach((key, values) -> {
-                                        if (!key.equalsIgnoreCase("Host")) {  // Host 헤더를 제외하고 복사
+                                        if (!key.equalsIgnoreCase("Host") && !key.equalsIgnoreCase("Content-Length")) {  // Host와 Content-Length 헤더를 제외하고 복사
                                             values.forEach(value -> requestBuilder.header(key, value));
                                         }
                                     });
@@ -53,5 +53,6 @@ public class GatewayConfig {
                         .uri("https://server.greenseed.or.kr"))
                 .build();
     }
+
 
 }
