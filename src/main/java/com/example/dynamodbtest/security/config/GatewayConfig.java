@@ -59,6 +59,8 @@ public class GatewayConfig {
 
                 .route("example_route", r -> r.path("/ws/**")
                         .uri("https://server.greenseed.or.kr"))
+                .route("example_route", r -> r.path("/screen-share/**")
+                        .uri("https://server.greenseed.or.kr"))
                 .build();
     }
 
