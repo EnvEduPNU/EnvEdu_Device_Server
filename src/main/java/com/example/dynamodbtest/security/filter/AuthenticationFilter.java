@@ -16,6 +16,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
@@ -47,9 +48,10 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
         // WebSocket 경로 확인
         if (exchange.getRequest().getURI().getPath().startsWith("/ws")) {
             ServerHttpRequest request = exchange.getRequest();
-            String tokenInParams = request.getHeaders().getFirst("Authorization");
+            MultiValueMap<String, String> queryParams = request.getQueryParams();
+            String tokenInParams = queryParams.getFirst("token");
 
-            log.info("토큰: " + tokenInParams);
+            log.info("토큰? : " + tokenInParams);
 
             if (tokenInParams != null && tokenInParams.startsWith("Bearer ")) {
                 String token = tokenInParams.substring(7);
