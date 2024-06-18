@@ -52,10 +52,13 @@ public class GatewayConfig {
                                 })
                                 .modifyResponseBody(String.class, String.class, (exchange, s) -> {
                                     return Mono.just(s);
-                                }))
+                                })
+                                .addResponseHeader("Content-Type", "text/event-stream")
+                                .removeResponseHeader("X-Frame-Options")) // X-Frame-Options 헤더 제거
                         .uri("https://server.greenseed.or.kr"))
                 .build();
     }
+
 
 
 
