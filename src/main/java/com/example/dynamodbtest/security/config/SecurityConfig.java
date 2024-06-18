@@ -36,10 +36,6 @@ public class SecurityConfig {
         http
                 .headers(headerSpec -> headerSpec.frameOptions(frameOptionsSpec -> frameOptionsSpec.disable()));
 
-        // 특정 경로에 대한 Content-Type 강제 설정
-        http
-                .addFilterBefore(responseFilter(), SecurityWebFiltersOrder.HTTP_HEADERS_WRITER);
-
         http
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable);
@@ -61,19 +57,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    private WebFilter responseFilter() {
-        return (exchange, chain) -> {
-            if (exchange.getRequest().getURI().getPath().startsWith("/ws")) {
-                return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-                    exchange.getResponse().getHeaders().setContentType(MediaType.TEXT_EVENT_STREAM);
-                }));
-            } else {
-                return chain.filter(exchange);
-            }
-        };
-    }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
