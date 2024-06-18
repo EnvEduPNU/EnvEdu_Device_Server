@@ -12,6 +12,7 @@ import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClien
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
+import reactor.core.publisher.Mono;
 
 
 @Configuration
@@ -36,14 +37,14 @@ public class GatewayConfig {
         return builder.routes()
                 .route("example_route", r -> r.path("/**")
                         .filters(f -> f
-                                .filter((exchange, chain) -> {
+                                .modifyRequestBody(String.class, String.class, (exchange, s) -> {
                                     ServerHttpRequest request = exchange.getRequest();
                                     ServerHttpRequest.Builder requestBuilder = request.mutate();
 
                                     log.info("문제 생길만한 요청헤더: " + request.getHeaders());
 
                                     request.getHeaders().forEach((key, values) -> {
-                                        if (!key.equalsIgnoreCase("Host") && !key.equalsIgnoreCase("Content-Length")) {  // Host와 Content-Length 헤더를 제외하고 복사
+                                        if (!key.equalsIgnoreCase("Host") && !key.equalsIgnoreCase("Content-Length")) {
                                             values.forEach(value -> requestBuilder.header(key, value));
                                         }
                                     });
@@ -53,11 +54,15 @@ public class GatewayConfig {
                                         requestBuilder.header("Content-Type", request.getHeaders().getContentType().toString());
                                     }
 
-                                    return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
+                                    return Mono.just(s);
+                                })
+                                .modifyResponseBody(String.class, String.class, (exchange, s) -> {
+                                    return Mono.just(s);
                                 }))
                         .uri("https://server.greenseed.or.kr"))
                 .build();
     }
+
 
 
 }
