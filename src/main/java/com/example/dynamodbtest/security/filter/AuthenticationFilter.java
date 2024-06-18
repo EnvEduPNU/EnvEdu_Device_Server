@@ -46,9 +46,10 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
 
         // WebSocket 경로 확인
         if (exchange.getRequest().getURI().getPath().startsWith("/ws")) {
-            String tokenInParams = exchange.getRequest().getQueryParams().getFirst("token");
+            String tokenInParams = exchange.getRequest().getQueryParams().getFirst("Authorization");
 
             log.info("토큰 체크 : {}",tokenInParams);
+            log.info("query params 체크 : {}",exchange.getRequest().getQueryParams());
 
             if (tokenInParams != null) {
                 try {
