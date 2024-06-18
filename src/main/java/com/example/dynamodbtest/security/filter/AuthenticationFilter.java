@@ -53,10 +53,6 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
 
             log.info("토큰? : " + tokenInParams);
 
-            if (tokenInParams != null && tokenInParams.startsWith("Bearer ")) {
-                String token = tokenInParams.substring(7);
-                log.info("토큰 체크 : {}", token);
-
                 try {
                     Claims claims = jwtTokenUtil.validateToken(tokenInParams);
                     String userName = claims.getSubject();
@@ -68,7 +64,7 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
                 }
-            }
+
         }
 
         // WebSocket이 아닌 경우 일반 HTTP 요청 처리
