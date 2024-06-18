@@ -37,7 +37,7 @@ public class GatewayConfig {
         return builder.routes()
                 .route("example_route", r -> r.path("/**")
                         .filters(f -> f
-                                .modifyRequestBody(String.class, String.class, (exchange, s) -> {
+                                .filter((exchange, chain) -> {
                                     ServerHttpRequest request = exchange.getRequest();
                                     ServerHttpRequest.Builder requestBuilder = request.mutate();
 
@@ -54,14 +54,12 @@ public class GatewayConfig {
                                         requestBuilder.header("Content-Type", request.getHeaders().getContentType().toString());
                                     }
 
-                                    return Mono.just(s);
-                                })
-                                .modifyResponseBody(String.class, String.class, (exchange, s) -> {
-                                    return Mono.just(s);
+                                    return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
                                 }))
-                        .uri("https://server.greenseed.or.kr"))
+                        .uri("http://localhost:8080"))  // Spring MVC 서버의 URI
                 .build();
     }
+
 
 
 
