@@ -82,7 +82,7 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
                             Claims claims = jwtTokenUtil.validateToken(token);
                             String userName = claims.getSubject();
                             exchange.getAttributes().put("userName", userName);
-                            log.info("토큰으로 인증 됨");
+                            log.info("토큰으로 인증 됨!");
 
                             return onAuthenticationSuccess(null, exchange, chain);
                         } catch (Exception e) {
