@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -58,6 +60,13 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
                     String userName = claims.getSubject();
                     exchange.getAttributes().put("userName", userName);
                     log.info("WebSocket 경로에서 토큰으로 인증 됨");
+
+                    // 헤더 설정
+                    ServerHttpResponse response = exchange.getResponse();
+                    HttpHeaders headers = response.getHeaders();
+                    headers.set("Content-Type", "text/event-stream");
+                    headers.remove("X-Frame-Options");  // X-Frame-Options 헤더 제거
+
                     return onAuthenticationSuccessWebsocket(null, exchange, chain);
                 } catch (Exception e) {
                     log.info("Invalid JWT token in WebSocket connection");
