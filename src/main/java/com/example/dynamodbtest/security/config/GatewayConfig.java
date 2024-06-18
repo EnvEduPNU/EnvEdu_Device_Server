@@ -47,11 +47,6 @@ public class GatewayConfig {
                                         values.forEach(value -> requestBuilder.header(key, value));
                                     });
 
-                                    // Content-Type 헤더가 있는 경우 복사
-                                    if (request.getHeaders().getContentType() != null) {
-                                        requestBuilder.header("Content-Type", request.getHeaders().getContentType().toString());
-                                    }
-
                                     ServerHttpRequest mutatedRequest = requestBuilder.build();
                                     return Mono.just(mutatedRequest.getBody().toString());
                                 })
