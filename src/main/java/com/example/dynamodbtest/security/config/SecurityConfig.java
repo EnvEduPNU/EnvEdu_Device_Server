@@ -30,7 +30,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 
         http
-                .headers(headerSpec -> headerSpec.frameOptions(frameOptionsSpec -> frameOptionsSpec.mode(XFrameOptionsServerHttpHeadersWriter.Mode.SAMEORIGIN)));
+                .headers(headerSpec -> headerSpec.frameOptions(frameOptionsSpec -> frameOptionsSpec.disable()));
 
         http
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
