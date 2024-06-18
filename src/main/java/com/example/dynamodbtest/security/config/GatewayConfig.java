@@ -48,6 +48,11 @@ public class GatewayConfig {
                                         }
                                     });
 
+                                    // Content-Type 헤더가 있는 경우 복사
+                                    if (request.getHeaders().getContentType() != null) {
+                                        requestBuilder.header("Content-Type", request.getHeaders().getContentType().toString());
+                                    }
+
                                     return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
                                 }))
                         .uri("https://server.greenseed.or.kr"))
