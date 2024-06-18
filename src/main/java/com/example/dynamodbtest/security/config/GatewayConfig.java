@@ -56,7 +56,7 @@ public class GatewayConfig {
 
                                     return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
                                 }))
-                        .uri("http://localhost:8080"))  // Spring MVC 서버의 URI
+                        .uri("https://server.greenseed.or.kr"))
                 .build();
     }
 
