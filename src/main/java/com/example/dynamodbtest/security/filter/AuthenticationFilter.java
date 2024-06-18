@@ -48,6 +48,9 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
         if (exchange.getRequest().getURI().getPath().startsWith("/ws")) {
             ServerHttpRequest request = exchange.getRequest();
             String tokenInParams = request.getHeaders().getFirst("Authorization");
+
+            log.info("토큰: " + tokenInParams);
+
             if (tokenInParams != null && tokenInParams.startsWith("Bearer ")) {
                 String token = tokenInParams.substring(7);
                 log.info("토큰 체크 : {}", token);
