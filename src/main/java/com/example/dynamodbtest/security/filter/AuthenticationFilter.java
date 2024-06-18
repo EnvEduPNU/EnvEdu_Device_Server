@@ -70,6 +70,29 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
 
         }
 
+        // WebSocket 경로 확인
+        if (exchange.getRequest().getURI().getPath().startsWith("/screen-share")) {
+            ServerHttpRequest request = exchange.getRequest();
+            MultiValueMap<String, String> queryParams = request.getQueryParams();
+            String tokenInParams = queryParams.getFirst("token");
+
+            log.info("토큰? : " + tokenInParams);
+
+            try {
+                Claims claims = jwtTokenUtil.validateToken(tokenInParams);
+                String userName = claims.getSubject();
+                exchange.getAttributes().put("userName", userName);
+                log.info("WebSocket 경로에서 토큰으로 인증 됨");
+
+                return onAuthenticationSuccessWebsocket(null, exchange, chain);
+            } catch (Exception e) {
+                log.info("Invalid JWT token in WebSocket connection");
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                return exchange.getResponse().setComplete();
+            }
+
+        }
+
         // WebSocket이 아닌 경우 일반 HTTP 요청 처리
         Mono<String> authHeader = Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst("Authorization"));
 
