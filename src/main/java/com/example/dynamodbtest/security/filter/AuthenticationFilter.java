@@ -46,12 +46,12 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
 
         // WebSocket 경로 확인
         if (exchange.getRequest().getURI().getPath().startsWith("/ws")) {
-            String tokenInParams = exchange.getRequest().getQueryParams().getFirst("Authorization");
+            ServerHttpRequest request = exchange.getRequest();
+            String tokenInParams = request.getHeaders().getFirst("Authorization");
+            if (tokenInParams != null && tokenInParams.startsWith("Bearer ")) {
+                String token = tokenInParams.substring(7);
+                log.info("토큰 체크 : {}", token);
 
-            log.info("토큰 체크 : {}",tokenInParams);
-            log.info("query params 체크 : {}",exchange.getRequest().getQueryParams());
-
-            if (tokenInParams != null) {
                 try {
                     Claims claims = jwtTokenUtil.validateToken(tokenInParams);
                     String userName = claims.getSubject();
@@ -63,10 +63,6 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
                 }
-            } else {
-                log.info("No token provided in WebSocket connection");
-                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                return exchange.getResponse().setComplete();
             }
         }
 
