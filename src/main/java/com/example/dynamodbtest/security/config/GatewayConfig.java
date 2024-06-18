@@ -36,7 +36,26 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/**")
+                        .filters(f -> f
+                                .filter((exchange, chain) -> {
+                                    ServerHttpRequest request = exchange.getRequest();
+                                    ServerHttpRequest.Builder requestBuilder = request.mutate();
 
+                                    log.info("문제 생길만한 요청헤더: " + request.getHeaders());
+
+                                    request.getHeaders().forEach((key, values) -> {
+                                        if (!key.equalsIgnoreCase("Host") && !key.equalsIgnoreCase("Content-Length")) {
+                                            values.forEach(value -> requestBuilder.header(key, value));
+                                        }
+                                    });
+
+                                    // Content-Type 헤더가 있는 경우 복사
+                                    if (request.getHeaders().getContentType() != null) {
+                                        requestBuilder.header("Content-Type", request.getHeaders().getContentType().toString());
+                                    }
+
+                                    return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
+                                }))
                         .uri("https://server.greenseed.or.kr"))
                 .build();
     }
