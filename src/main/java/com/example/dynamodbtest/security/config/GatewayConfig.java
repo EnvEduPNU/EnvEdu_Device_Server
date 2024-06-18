@@ -41,7 +41,7 @@ public class GatewayConfig {
                                     ServerHttpRequest request = exchange.getRequest();
                                     ServerHttpRequest.Builder requestBuilder = request.mutate();
 
-                                    log.info("문제 생길만한 요청헤더: " + request.getHeaders());
+                                    log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
 
                                     request.getHeaders().forEach((key, values) -> {
                                         if (!key.equalsIgnoreCase("Host") && !key.equalsIgnoreCase("Content-Length")) {
