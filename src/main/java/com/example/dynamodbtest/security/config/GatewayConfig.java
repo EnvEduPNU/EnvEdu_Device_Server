@@ -41,7 +41,9 @@ public class GatewayConfig {
                             ServerHttpRequest request = exchange.getRequest();
                             ServerHttpRequest.Builder requestBuilder = request.mutate();
 
-                            request.getHeaders().forEach((key, values) -> values.forEach(value -> requestBuilder.header(key, value)));
+                                    log.debug("문제 생길만한 요청헤더: " + request.getHeaders());
+
+                                    request.getHeaders().forEach((key, values) -> values.forEach(value -> requestBuilder.header(key, value)));
 
                             return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
                         }))
