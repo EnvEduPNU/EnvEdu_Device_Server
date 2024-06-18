@@ -4,7 +4,9 @@ package com.example.dynamodbtest.security.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,8 @@ import org.springframework.security.web.server.header.XFrameOptionsServerHttpHea
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.server.WebFilter;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 
@@ -31,6 +35,10 @@ public class SecurityConfig {
 
         http
                 .headers(headerSpec -> headerSpec.frameOptions(frameOptionsSpec -> frameOptionsSpec.disable()));
+
+        // 특정 경로에 대한 Content-Type 강제 설정
+        http
+                .addFilterBefore(responseFilter(), SecurityWebFiltersOrder.HTTP_HEADERS_WRITER);
 
         http
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
@@ -53,6 +61,19 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    private WebFilter responseFilter() {
+        return (exchange, chain) -> {
+            if (exchange.getRequest().getURI().getPath().startsWith("/ws")) {
+                return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+                    exchange.getResponse().getHeaders().setContentType(MediaType.TEXT_EVENT_STREAM);
+                }));
+            } else {
+                return chain.filter(exchange);
+            }
+        };
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
