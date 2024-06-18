@@ -61,12 +61,6 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
                     exchange.getAttributes().put("userName", userName);
                     log.info("WebSocket 경로에서 토큰으로 인증 됨");
 
-                    // 헤더 설정
-                    ServerHttpResponse response = exchange.getResponse();
-                    HttpHeaders headers = response.getHeaders();
-                    headers.set("Content-Type", "text/event-stream");
-                    headers.remove("X-Frame-Options");  // X-Frame-Options 헤더 제거
-
                     return onAuthenticationSuccessWebsocket(null, exchange, chain);
                 } catch (Exception e) {
                     log.info("Invalid JWT token in WebSocket connection");
