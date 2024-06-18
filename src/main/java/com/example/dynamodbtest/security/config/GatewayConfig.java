@@ -31,23 +31,27 @@ public class GatewayConfig {
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-
         log.info("Gateway 설정 완료!");
 
         return builder.routes()
                 .route("example_route", r -> r.path("/**")
                         .filters(f -> f
                                 .filter((exchange, chain) -> {
-                            ServerHttpRequest request = exchange.getRequest();
-                            ServerHttpRequest.Builder requestBuilder = request.mutate();
+                                    ServerHttpRequest request = exchange.getRequest();
+                                    ServerHttpRequest.Builder requestBuilder = request.mutate();
 
                                     log.info("문제 생길만한 요청헤더: " + request.getHeaders());
 
-                                    request.getHeaders().forEach((key, values) -> values.forEach(value -> requestBuilder.header(key, value)));
+                                    request.getHeaders().forEach((key, values) -> {
+                                        if (!key.equalsIgnoreCase("Host")) {  // Host 헤더를 제외하고 복사
+                                            values.forEach(value -> requestBuilder.header(key, value));
+                                        }
+                                    });
 
-                            return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
-                        }))
+                                    return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
+                                }))
                         .uri("https://server.greenseed.or.kr"))
                 .build();
     }
+
 }
