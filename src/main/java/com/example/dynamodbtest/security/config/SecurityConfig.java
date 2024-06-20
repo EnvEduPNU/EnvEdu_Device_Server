@@ -80,8 +80,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/datafolder/**", configuration);
         source.registerCorsConfiguration("/ocean-quality/**", configuration);
         source.registerCorsConfiguration("/air-quality/**", configuration);
-        source.registerCorsConfiguration("/register-session/**", configuration);
-        source.registerCorsConfiguration("/get-session-ids/**", configuration);
+        source.registerCorsConfiguration("/api/**", configuration);
         source.registerCorsConfiguration("/ws/**", null);
         source.registerCorsConfiguration("/screen-share/**", null);
 
