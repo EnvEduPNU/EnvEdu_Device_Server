@@ -36,21 +36,30 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
-                        .filters(f -> f
-                                .filter((exchange, chain) -> {
-                                    log.info("Request Path: " + exchange.getRequest().getPath());
-                                    log.info("Request Headers: " + exchange.getRequest().getHeaders());
-                                    return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-                                        log.info("Response Status Code: " + exchange.getResponse().getStatusCode());
-                                    }));
-                                })
+                        .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, s) -> {
+                                            ServerHttpRequest request = exchange.getRequest();
+                                            ServerHttpRequest.Builder requestBuilder = request.mutate();
+
+                                            log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
+
+                                            ServerHttpRequest mutatedRequest = requestBuilder.build();
+                                            return Mono.just(mutatedRequest.getBody().toString());
+                                        })
+                                        .modifyResponseBody(String.class, String.class, (exchange, s) -> Mono.just(s))
+
                         )
                         .uri("https://server.greenseed.or.kr"))
+
                 .route("example_route", r -> r.path("/ws/**")
                         .uri("https://server.greenseed.or.kr"))
                 .route("example_route", r -> r.path("/screen-share/**")
                         .uri("https://server.greenseed.or.kr"))
                 .build();
     }
+
+
+
+
+
 
 }
