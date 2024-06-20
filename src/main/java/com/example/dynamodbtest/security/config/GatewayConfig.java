@@ -53,12 +53,18 @@ public class GatewayConfig {
                                             ServerHttpRequest mutatedRequest = requestBuilder.build();
                                             return Mono.just(mutatedRequest.getBody().toString());
                                         })
-                                        .modifyRequestBody(String.class, String.class, (exchange, s) -> exchange.getRequest().getBody().map(dataBuffer -> {
-                                            byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                                            dataBuffer.read(bytes);
-                                            DataBufferUtils.release(dataBuffer);
-                                            return new String(bytes, StandardCharsets.UTF_8);
-                                        }))
+                                .modifyRequestBody(String.class, String.class, (exchange, s) -> {
+                                    return exchange.getRequest()
+                                            .getBody()
+                                            .map(dataBuffer -> {
+                                                byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                                                dataBuffer.read(bytes);
+                                                DataBufferUtils.release(dataBuffer);
+                                                return new String(bytes, StandardCharsets.UTF_8);
+                                            })
+                                            .reduce("", (prev, str) -> prev + str); // 여러 DataBuffer를 하나의 문자열로 합칩니다.
+                                })
+
 
 
                         )
