@@ -40,35 +40,25 @@ public class GatewayConfig {
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
                         .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, s) -> {
-                                            ServerHttpRequest request = exchange.getRequest();
-                                            ServerHttpRequest.Builder requestBuilder = request.mutate();
+                                    ServerHttpRequest request = exchange.getRequest();
+                                    ServerHttpRequest.Builder requestBuilder = request.mutate();
 
-                                            log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
+                                    // 모든 헤더를 그대로 복사
+                                    request.getHeaders().forEach((key, values) -> {
+                                        values.forEach(value -> requestBuilder.header(key, value));
+                                    });
 
-                                            // 모든 헤더를 그대로 복사
-                                            request.getHeaders().forEach((key, values) -> {
-                                                values.forEach(value -> requestBuilder.header(key, value));
-                                            });
+                                    ServerHttpRequest mutatedRequest = requestBuilder.build();
 
-                                            ServerHttpRequest mutatedRequest = requestBuilder.build();
-                                            return Mono.just(mutatedRequest.getBody().toString());
-                                        })
-                                .modifyRequestBody(String.class, String.class, (exchange, s) -> {
-                                    return exchange.getRequest()
-                                            .getBody()
+                                    // Body를 안전하게 읽고 문자열로 변환
+                                    return mutatedRequest.getBody()
                                             .map(dataBuffer -> {
-                                                // 버퍼에서 바이트 배열을 읽음
                                                 byte[] bytes = new byte[dataBuffer.readableByteCount()];
                                                 dataBuffer.read(bytes);
-
-                                                // 버퍼 사용 후 즉시 해제
                                                 DataBufferUtils.release(dataBuffer);
-
-                                                // 읽은 바이트를 문자열로 변환
                                                 return new String(bytes, StandardCharsets.UTF_8);
                                             })
-                                            .collectList()  // Flux를 List로 변환
-                                            .map(list -> String.join("", list)); // List의 문자열을 하나로 합침
+                                            .reduce("", (prev, content) -> prev + content);  // 모든 내용을 하나의 문자열로 결합
                                 })
 
 
