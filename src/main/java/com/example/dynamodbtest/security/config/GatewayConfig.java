@@ -3,6 +3,8 @@ package com.example.dynamodbtest.security.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +14,7 @@ import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClien
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 
@@ -36,23 +39,7 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
-                        .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, s) -> {
-                                            ServerHttpRequest request = exchange.getRequest();
-                                            ServerHttpRequest.Builder requestBuilder = request.mutate();
-
-                                            log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
-
-                                            // 모든 헤더를 그대로 복사
-                                            request.getHeaders().forEach((key, values) -> {
-                                                values.forEach(value -> requestBuilder.header(key, value));
-                                            });
-
-                                            ServerHttpRequest mutatedRequest = requestBuilder.build();
-                                            return Mono.just(mutatedRequest.getBody().toString());
-                                        })
-                                        .modifyResponseBody(String.class, String.class, (exchange, s) -> Mono.just(s))
-
-                        )
+                        .filters(f -> f.filter(new CustomRequestHeaderFilter().apply(new Object())))
                         .uri("https://server.greenseed.or.kr"))
 
                 .route("example_route", r -> r.path("/ws/**")
@@ -63,7 +50,23 @@ public class GatewayConfig {
     }
 
 
+    public static class CustomRequestHeaderFilter extends AbstractGatewayFilterFactory<Object> {
+        @Override
+        public GatewayFilter apply(Object config) {
+            return (exchange, chain) -> {
+                // 요청 헤더를 설정
+                ServerHttpRequest request = exchange.getRequest().mutate()
+                        .header("X-Custom-Header", "CustomValue")
+                        .build();
 
+                // 변경된 요청으로 교환을 재설정
+                ServerWebExchange mutatedExchange = exchange.mutate().request(request).build();
+
+                // 요청 체인을 계속 진행
+                return chain.filter(mutatedExchange);
+            };
+        }
+    }
 
 
 
