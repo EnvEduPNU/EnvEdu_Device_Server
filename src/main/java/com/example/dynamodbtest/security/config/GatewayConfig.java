@@ -54,16 +54,22 @@ public class GatewayConfig {
                                             return Mono.just(mutatedRequest.getBody().toString());
                                         })
                                 .modifyRequestBody(String.class, String.class, (exchange, s) -> {
-                                    return exchange.getRequest()
-                                            .getBody()
-                                            .map(dataBuffer -> {
-                                                byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                                                dataBuffer.read(bytes);
-                                                DataBufferUtils.release(dataBuffer);
-                                                return new String(bytes, StandardCharsets.UTF_8);
-                                            })
-                                            .reduce("", (prev, str) -> prev + str); // 여러 DataBuffer를 하나의 문자열로 합칩니다.
+                                    return exchange.getRequest().getBody().map(dataBuffer -> {
+                                        // 버퍼에서 데이터 읽기
+                                        byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                                        dataBuffer.read(bytes);
+
+                                        // 읽은 데이터를 문자열로 변환
+                                        String bodyString = new String(bytes, StandardCharsets.UTF_8);
+
+                                        // 데이터 처리 완료 후 버퍼 해제
+                                        DataBufferUtils.release(dataBuffer);
+
+                                        // 변환된 문자열 반환
+                                        return bodyString;
+                                    }).reduce("", (prev, str) -> prev + str); // 문자열을 하나로 합치기
                                 })
+
 
 
 
