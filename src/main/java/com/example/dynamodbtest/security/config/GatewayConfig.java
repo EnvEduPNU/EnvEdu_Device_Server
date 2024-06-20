@@ -49,17 +49,23 @@ public class GatewayConfig {
                 .build();
     }
 
-
     public static class CustomRequestHeaderFilter extends AbstractGatewayFilterFactory<Object> {
         @Override
         public GatewayFilter apply(Object config) {
             return (exchange, chain) -> {
                 // 요청 헤더를 설정
-                ServerHttpRequest request = exchange.getRequest().mutate()
-                        .header("X-Custom-Header", "CustomValue")
-                        .build();
+                ServerHttpRequest.Builder requestBuilder = exchange.getRequest().mutate();
+
+                // 기존의 모든 헤더를 복사
+                exchange.getRequest().getHeaders().forEach((key, values) -> {
+                    values.forEach(value -> requestBuilder.header(key, value));
+                });
+
+                // 추가 헤더를 설정
+                requestBuilder.header("X-Custom-Header", "CustomValue");
 
                 // 변경된 요청으로 교환을 재설정
+                ServerHttpRequest request = requestBuilder.build();
                 ServerWebExchange mutatedExchange = exchange.mutate().request(request).build();
 
                 // 요청 체인을 계속 진행
@@ -67,6 +73,7 @@ public class GatewayConfig {
             };
         }
     }
+
 
 
 
