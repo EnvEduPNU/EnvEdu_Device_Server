@@ -3,8 +3,6 @@ package com.example.dynamodbtest.security.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +12,6 @@ import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClien
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 
@@ -39,7 +36,13 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
-                        .filters(f -> f.filter(new CustomRequestHeaderFilter().apply(new Object())))
+                        .filters(f -> f
+                                .addResponseHeader("Access-Control-Allow-Origin", "*")
+                                .addResponseHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+                                .addResponseHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+                                .addResponseHeader("Access-Control-Allow-Credentials", "true")
+                                .addResponseHeader("Access-Control-Expose-Headers", "Content-Length, X-Kuma-Revision")
+                                .addResponseHeader("Access-Control-Max-Age", "3600"))
                         .uri("https://server.greenseed.or.kr"))
 
                 .route("example_route", r -> r.path("/ws/**")
@@ -49,30 +52,7 @@ public class GatewayConfig {
                 .build();
     }
 
-    public static class CustomRequestHeaderFilter extends AbstractGatewayFilterFactory<Object> {
-        @Override
-        public GatewayFilter apply(Object config) {
-            return (exchange, chain) -> {
-                // 요청 헤더를 설정
-                ServerHttpRequest.Builder requestBuilder = exchange.getRequest().mutate();
 
-                // 기존의 모든 헤더를 복사
-                exchange.getRequest().getHeaders().forEach((key, values) -> {
-                    values.forEach(value -> requestBuilder.header(key, value));
-                });
-
-                // 추가 헤더를 설정
-                requestBuilder.header("X-Custom-Header", "CustomValue");
-
-                // 변경된 요청으로 교환을 재설정
-                ServerHttpRequest request = requestBuilder.build();
-                ServerWebExchange mutatedExchange = exchange.mutate().request(request).build();
-
-                // 요청 체인을 계속 진행
-                return chain.filter(mutatedExchange);
-            };
-        }
-    }
 
 
 
