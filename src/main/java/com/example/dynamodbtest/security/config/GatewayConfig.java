@@ -7,11 +7,16 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -36,13 +41,29 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
-                        .filters(f -> f
-                                .addResponseHeader("Access-Control-Allow-Origin", "*")
-                                .addResponseHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-                                .addResponseHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
-                                .addResponseHeader("Access-Control-Allow-Credentials", "true")
-                                .addResponseHeader("Access-Control-Expose-Headers", "Content-Length, X-Kuma-Revision")
-                                .addResponseHeader("Access-Control-Max-Age", "3600"))
+                        .filters(f -> f.filter((exchange, chain) -> {
+                            ServerHttpRequest request = exchange.getRequest();
+                            HttpHeaders headers = request.getHeaders();
+
+                            // 기존 요청 헤더 복사
+                            ServerHttpRequest.Builder requestBuilder = request.mutate();
+                            headers.forEach((key, values) -> values.forEach(value -> requestBuilder.header(key, value)));
+
+                            // 요청 본문 복사
+                            Flux<DataBuffer> body = request.getBody().map(dataBuffer -> {
+                                DataBufferUtils.retain(dataBuffer);
+                                return dataBuffer;
+                            });
+
+                            ServerHttpRequest mutatedRequest = new ServerHttpRequestDecorator(requestBuilder.build()) {
+                                @Override
+                                public Flux<DataBuffer> getBody() {
+                                    return body;
+                                }
+                            };
+
+                            return chain.filter(exchange.mutate().request(mutatedRequest).build());
+                        }))
                         .uri("https://server.greenseed.or.kr"))
 
                 .route("example_route", r -> r.path("/ws/**")
