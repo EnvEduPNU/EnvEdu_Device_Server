@@ -3,6 +3,8 @@ package com.example.dynamodbtest.security.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -39,12 +41,29 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**", "/seed/**", "/mydata/**", "/datafolder/**", "/api/**")
+                        .filters(f -> f.filter((GatewayFilter) new HeaderLoggingFilter()))
+
                         .uri("https://server.greenseed.or.kr"))
                 .route("example_route", r -> r.path("/ws/**")
                         .uri("https://server.greenseed.or.kr"))
                 .route("example_route", r -> r.path("/screen-share/**")
                         .uri("https://server.greenseed.or.kr"))
                 .build();
+    }
+
+    // 사용자 정의 필터
+    public static class HeaderLoggingFilter extends AbstractGatewayFilterFactory<Object> {
+        @Override
+        public GatewayFilter apply(Object config) {
+            return (exchange, chain) -> {
+                // 요청 헤더 로깅
+                exchange.getRequest().getHeaders().forEach((key, value) -> {
+                    log.info("Header '{}' : '{}'", key, value);
+                });
+
+                return chain.filter(exchange);
+            };
+        }
     }
 
 
