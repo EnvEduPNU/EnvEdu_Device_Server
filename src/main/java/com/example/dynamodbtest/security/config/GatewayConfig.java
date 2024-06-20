@@ -3,16 +3,21 @@ package com.example.dynamodbtest.security.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
 
 
 @Configuration
@@ -36,19 +41,7 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
-                        .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, s) -> {
-                                            ServerHttpRequest request = exchange.getRequest();
-                                            ServerHttpRequest.Builder requestBuilder = request.mutate();
-
-                                            log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
-                                            log.info("문제 생길만한 요청바디!: " + request.getBody());
-
-                                            ServerHttpRequest mutatedRequest = requestBuilder.build();
-
-                                            return Mono.justOrEmpty(mutatedRequest).dematerialize();
-                                        })
-
-                        )
+                        .filters(f -> f.filter((GatewayFilter) new CustomRequestBodyFilter()))
                         .uri("https://server.greenseed.or.kr"))
 
                 .route("example_route", r -> r.path("/ws/**")
@@ -58,7 +51,31 @@ public class GatewayConfig {
                 .build();
     }
 
+    public static class CustomRequestBodyFilter extends AbstractGatewayFilterFactory<Object> {
+        @Override
+        public GatewayFilter apply(Object config) {
+            return (exchange, chain) -> {
+                ServerHttpRequest request = exchange.getRequest();
 
+                return DataBufferUtils.join(request.getBody())
+                        .flatMap(dataBuffer -> {
+                            byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                            dataBuffer.read(bytes);
+                            DataBufferUtils.release(dataBuffer);
+
+                            String bodyString = new String(bytes, StandardCharsets.UTF_8);
+                            log.info("문제 생길만한 요청바디!: " + bodyString);
+
+                            // 원래 요청 바디로 다시 설정
+                            ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                                    .header("Content-Length", Integer.toString(bytes.length))
+                                    .build();
+
+                            return chain.filter(exchange.mutate().request(mutatedRequest).build());
+                        });
+            };
+        }
+    }
 
 
 
