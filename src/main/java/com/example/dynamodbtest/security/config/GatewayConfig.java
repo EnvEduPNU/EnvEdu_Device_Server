@@ -36,18 +36,21 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
+                        .filters(f -> f
+                                .filter((exchange, chain) -> {
+                                    log.info("Request Path: " + exchange.getRequest().getPath());
+                                    log.info("Request Headers: " + exchange.getRequest().getHeaders());
+                                    return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+                                        log.info("Response Status Code: " + exchange.getResponse().getStatusCode());
+                                    }));
+                                })
+                        )
                         .uri("https://server.greenseed.or.kr"))
-
                 .route("example_route", r -> r.path("/ws/**")
                         .uri("https://server.greenseed.or.kr"))
                 .route("example_route", r -> r.path("/screen-share/**")
                         .uri("https://server.greenseed.or.kr"))
                 .build();
     }
-
-
-
-
-
 
 }
