@@ -39,36 +39,6 @@ public class GatewayConfig {
 
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
-                        .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, s) -> {
-                                            ServerHttpRequest request = exchange.getRequest();
-                                            ServerHttpRequest.Builder requestBuilder = request.mutate();
-
-                                            log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
-
-                                            // 모든 헤더를 그대로 복사
-                                            request.getHeaders().forEach((key, values) -> {
-                                                values.forEach(value -> requestBuilder.header(key, value));
-                                            });
-
-                                            ServerHttpRequest mutatedRequest = requestBuilder.build();
-                                            Flux<DataBuffer> body = mutatedRequest.getBody();
-
-                                            String bodyString = String.valueOf(body
-                                                    .map(dataBuffer -> {
-                                                        byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                                                        dataBuffer.read(bytes);
-                                                        DataBufferUtils.release(dataBuffer);
-                                                        return new String(bytes);
-                                                    })
-                                                    .reduce("", (prev, content) -> prev + content));
-
-                                            log.info("어떤 값이 나가나 : " + bodyString);
-
-                                            return Mono.just(bodyString);
-                                        })
-                                        .modifyResponseBody(String.class, String.class, (exchange, s) -> Mono.just(s))
-
-                        )
                         .uri("https://server.greenseed.or.kr"))
 
                 .route("example_route", r -> r.path("/ws/**")
