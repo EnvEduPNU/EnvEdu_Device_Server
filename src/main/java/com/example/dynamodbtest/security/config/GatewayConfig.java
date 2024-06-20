@@ -7,12 +7,15 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
 
 
 @Configuration
@@ -50,9 +53,13 @@ public class GatewayConfig {
                                             ServerHttpRequest mutatedRequest = requestBuilder.build();
                                             return Mono.just(mutatedRequest.getBody().toString());
                                         })
-                                        .modifyResponseBody(String.class, String.class, (exchange, s) -> {
-                                            return Mono.just(s);
-                                        })
+                                        .modifyRequestBody(String.class, String.class, (exchange, s) -> exchange.getRequest().getBody().map(dataBuffer -> {
+                                            byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                                            dataBuffer.read(bytes);
+                                            DataBufferUtils.release(dataBuffer);
+                                            return new String(bytes, StandardCharsets.UTF_8);
+                                        }))
+
 
                         )
                         .uri("https://server.greenseed.or.kr"))
