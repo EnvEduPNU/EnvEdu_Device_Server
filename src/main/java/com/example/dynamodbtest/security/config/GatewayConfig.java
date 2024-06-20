@@ -37,20 +37,16 @@ public class GatewayConfig {
         return builder.routes()
                 .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
                         .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, s) -> {
-//                                            ServerHttpRequest request = exchange.getRequest();
-//                                            ServerHttpRequest.Builder requestBuilder = request.mutate();
-//
-//                                            log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
-//
-//                                            // 모든 헤더를 그대로 복사
-//                                            request.getHeaders().forEach((key, values) -> {
-//                                                values.forEach(value -> requestBuilder.header(key, value));
-//                                            });
-//
-//                                            ServerHttpRequest mutatedRequest = requestBuilder.build();
-                                            return Mono.just(s);
+                                            ServerHttpRequest request = exchange.getRequest();
+                                            ServerHttpRequest.Builder requestBuilder = request.mutate();
+
+                                            log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
+                                            log.info("문제 생길만한 요청바디!: " + request.getBody());
+
+                                            ServerHttpRequest mutatedRequest = requestBuilder.build();
+
+                                            return Mono.justOrEmpty(mutatedRequest).dematerialize();
                                         })
-                                        .modifyResponseBody(String.class, String.class, (exchange, s) -> Mono.just(s))
 
                         )
                         .uri("https://server.greenseed.or.kr"))
