@@ -53,6 +53,24 @@ public class GatewayConfig {
                                             ServerHttpRequest mutatedRequest = requestBuilder.build();
                                             return Mono.just(mutatedRequest.getBody().toString());
                                         })
+                                .modifyRequestBody(String.class, String.class, (exchange, s) -> {
+                                    return exchange.getRequest()
+                                            .getBody()
+                                            .map(dataBuffer -> {
+                                                // 버퍼에서 바이트 배열을 읽음
+                                                byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                                                dataBuffer.read(bytes);
+
+                                                // 버퍼 사용 후 즉시 해제
+                                                DataBufferUtils.release(dataBuffer);
+
+                                                // 읽은 바이트를 문자열로 변환
+                                                return new String(bytes, StandardCharsets.UTF_8);
+                                            })
+                                            .collectList()  // Flux를 List로 변환
+                                            .map(list -> String.join("", list)); // List의 문자열을 하나로 합침
+                                })
+
 
                         )
                         .uri("https://server.greenseed.or.kr"))
