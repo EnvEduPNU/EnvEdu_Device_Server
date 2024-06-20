@@ -35,7 +35,7 @@ public class GatewayConfig {
         log.info("Gateway 설정 완료!");
 
         return builder.routes()
-                .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**")
+                .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/register-session/**","/get-session-ids/**")
                         .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, s) -> {
                                             ServerHttpRequest request = exchange.getRequest();
                                             ServerHttpRequest.Builder requestBuilder = request.mutate();
