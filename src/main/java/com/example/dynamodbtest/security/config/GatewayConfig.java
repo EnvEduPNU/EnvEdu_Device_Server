@@ -7,20 +7,12 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.nio.charset.StandardCharsets;
 
 
 @Configuration
@@ -43,34 +35,32 @@ public class GatewayConfig {
         log.info("Gateway 설정 완료!");
 
         return builder.routes()
-                .route("api_route", r -> r.path("/login/**", "/seed/**", "/mydata/**", "/datafolder/**", "/api/**")
+                .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
                         .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, s) -> {
-                            return exchange.getRequest().getBody()
-                                    .map(dataBuffer -> {
-                                        byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                                        dataBuffer.read(bytes);
-                                        DataBufferUtils.release(dataBuffer); // 데이터 버퍼 해제
-                                        return new String(bytes, StandardCharsets.UTF_8);
-                                    })
-                                    .reduce("", (prev, content) -> prev + content) // 내용을 하나의 문자열로 결합
-                                    .map(body -> {
-                                        // 변형된 본문 데이터를 exchange 속성에 저장
-                                        exchange.getAttributes().put("modifiedBody", body);
-                                        return body;
-                                    });
-                        }))
-                        .uri("https://server.greenseed.or.kr")) // API 요청을 처리하는 서버 URI
+                                            ServerHttpRequest request = exchange.getRequest();
+                                            ServerHttpRequest.Builder requestBuilder = request.mutate();
 
-                .route("websocket_route", r -> r.path("/ws/**")
-                        .uri("https://server.greenseed.or.kr")) // WebSocket 요청을 처리하는 서버 URI
+                                            log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
 
-                .route("screen_share_route", r -> r.path("/screen-share/**")
-                        .uri("https://server.greenseed.or.kr")) // 화면 공유 요청을 처리하는 서버 URI
+                                            // 모든 헤더를 그대로 복사
+                                            request.getHeaders().forEach((key, values) -> {
+                                                values.forEach(value -> requestBuilder.header(key, value));
+                                            });
 
+                                            ServerHttpRequest mutatedRequest = requestBuilder.build();
+                                            return Mono.just(mutatedRequest.toString());
+                                        })
+                                        .modifyResponseBody(String.class, String.class, (exchange, s) -> Mono.just(s))
+
+                        )
+                        .uri("https://server.greenseed.or.kr"))
+
+                .route("example_route", r -> r.path("/ws/**")
+                        .uri("https://server.greenseed.or.kr"))
+                .route("example_route", r -> r.path("/screen-share/**")
+                        .uri("https://server.greenseed.or.kr"))
                 .build();
     }
-
-
 
 
 
