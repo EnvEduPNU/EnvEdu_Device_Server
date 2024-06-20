@@ -7,11 +7,14 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import org.springframework.web.reactive.socket.client.WebSocketClient;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -48,7 +51,20 @@ public class GatewayConfig {
                                             });
 
                                             ServerHttpRequest mutatedRequest = requestBuilder.build();
-                                            return Mono.just(mutatedRequest.getBody().toString());
+                                            Flux<DataBuffer> body = mutatedRequest.getBody();
+
+                                            String bodyString = String.valueOf(body
+                                                    .map(dataBuffer -> {
+                                                        byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                                                        dataBuffer.read(bytes);
+                                                        DataBufferUtils.release(dataBuffer);
+                                                        return new String(bytes);
+                                                    })
+                                                    .reduce("", (prev, content) -> prev + content));
+
+                                            log.info("어떤 값이 나가나 : " + bodyString);
+
+                                            return Mono.just(bodyString);
                                         })
                                         .modifyResponseBody(String.class, String.class, (exchange, s) -> Mono.just(s))
 
