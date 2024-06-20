@@ -48,7 +48,7 @@ public class GatewayConfig {
                                             });
 
                                             ServerHttpRequest mutatedRequest = requestBuilder.build();
-                                            return Mono.just(mutatedRequest.toString());
+                                            return Mono.just(mutatedRequest.getBody().toString());
                                         })
                                         .modifyResponseBody(String.class, String.class, (exchange, s) -> Mono.just(s))
 
