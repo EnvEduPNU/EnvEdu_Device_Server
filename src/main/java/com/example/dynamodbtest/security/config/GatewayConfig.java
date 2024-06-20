@@ -43,6 +43,8 @@ public class GatewayConfig {
                             // 현재 요청을 가져옴
                             ServerHttpRequest request = exchange.getRequest();
 
+                            log.info("문제 있는 헤더 : " + request);
+
                             // 요청 헤더를 복사하여 새로운 요청 빌더를 생성
                             ServerHttpRequest.Builder requestBuilder = request.mutate();
 
@@ -55,7 +57,7 @@ public class GatewayConfig {
                             ServerHttpRequest mutatedRequest = requestBuilder.build();
 
                             // 새로운 요청을 사용하여 다음 필터 또는 최종 목적지로 요청을 전달
-                            return chain.filter(exchange.mutate().request(mutatedRequest).build());
+                            return (Mono<Void>) exchange.mutate().request(mutatedRequest);
                         }))
                         .uri("https://server.greenseed.or.kr"))
 
