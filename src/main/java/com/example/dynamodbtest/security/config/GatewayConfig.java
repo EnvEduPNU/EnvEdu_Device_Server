@@ -14,6 +14,8 @@ import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,7 +43,7 @@ public class GatewayConfig {
                             log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
                             log.info("문제 생길만한 요청바디!: " + body);
                             // 본문을 수정하지 않고 그대로 반환
-                            return Mono.just(body);
+                            return Mono.justOrEmpty(body);
                         }))
                         .uri("https://server.greenseed.or.kr"))
 
