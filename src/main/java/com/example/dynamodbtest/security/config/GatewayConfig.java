@@ -52,14 +52,20 @@ public class GatewayConfig {
 
                                     // Body를 안전하게 읽고 문자열로 변환
                                     return mutatedRequest.getBody()
-                                            .map(dataBuffer -> {
+                                            .flatMap(dataBuffer -> {
+                                                // 데이터 버퍼에서 바이트 배열 읽기
                                                 byte[] bytes = new byte[dataBuffer.readableByteCount()];
                                                 dataBuffer.read(bytes);
+
+                                                // 데이터 버퍼를 해제
                                                 DataBufferUtils.release(dataBuffer);
-                                                return new String(bytes, StandardCharsets.UTF_8);
+
+                                                // 바이트 배열을 문자열로 변환하고 반환
+                                                return Mono.just(new String(bytes, StandardCharsets.UTF_8));
                                             })
                                             .reduce("", (prev, content) -> prev + content);  // 모든 내용을 하나의 문자열로 결합
                                 })
+
 
 
                         )
