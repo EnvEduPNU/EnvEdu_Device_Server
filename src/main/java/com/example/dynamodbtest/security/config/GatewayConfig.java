@@ -46,11 +46,15 @@ public class GatewayConfig {
                             return Mono.justOrEmpty(body);
                         }))
                         .uri("https://server.greenseed.or.kr"))
+//                        .uri("http://localhost:8081"))
+
 
                 .route("example_route", r -> r.path("/ws/**")
                         .uri("https://server.greenseed.or.kr"))
+//                        .uri("http://localhost:8081"))
                 .route("example_route", r -> r.path("/screen-share/**")
                         .uri("https://server.greenseed.or.kr"))
+//                        .uri("http://localhost:8081"))
                 .build();
     }
 
