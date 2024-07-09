@@ -66,8 +66,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://new.greenseed.or.kr"));  // 허용할 출처
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));  // 허용할 출처
+//        configuration.setAllowedOrigins(Arrays.asList("https://new.greenseed.or.kr"));  // 허용할 출처
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));  // 허용할 출처
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));  // 허용할 HTTP 메소드
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));  // 허용할 헤더
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));  // 브라우저에서 접근 가능한 헤더
@@ -82,6 +82,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/ocean-quality/**", configuration);
         source.registerCorsConfiguration("/air-quality/**", configuration);
         source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/student/**", configuration);
         source.registerCorsConfiguration("/ws/**", null);
         source.registerCorsConfiguration("/screen-share/**", null);
 
