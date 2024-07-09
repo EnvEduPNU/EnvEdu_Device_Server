@@ -119,6 +119,31 @@
             <version>1.1.1</version>
         </dependency>
 
+        <!-- Spring Data DynamoDB -->
+        <dependency>
+            <groupId>com.github.derjust</groupId>
+            <artifactId>spring-data-dynamodb</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+
+        <!-- AWS SDK for DynamoDB Enhanced -->
+        <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/dynamodb-enhanced -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb-enhanced</artifactId>
+            <version>2.26.8</version>
+        </dependency>
+
+
+        <!-- AWS SDK for DynamoDB -->
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-dynamodb</artifactId>
+            <version>1.12.745</version>
+        </dependency>
+
+
     </dependencies>
 
     <dependencyManagement>

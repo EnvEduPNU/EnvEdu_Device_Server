@@ -227,7 +227,7 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
             log.info("추출된 유저 이름: {}", userName);
 
         } catch (Exception e) {
-            log.error("토큰 파싱 중 오류 발생: ", e);
+            log.error("웹소켓: 토큰 파싱 중 오류 발생: ", e);
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }

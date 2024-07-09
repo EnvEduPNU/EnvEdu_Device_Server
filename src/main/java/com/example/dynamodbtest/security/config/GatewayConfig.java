@@ -37,7 +37,7 @@ public class GatewayConfig {
         log.info("Gateway 설정 완료!");
 
         return builder.routes()
-                .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**")
+                .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**","/ocean-quality/**", "/air-quality/**","/student/**")
                         .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, body) -> {
                             ServerHttpRequest request = exchange.getRequest();
                             log.info("문제 생길만한 요청헤더!: " + request.getHeaders());
