@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 @RestController
@@ -24,10 +25,15 @@ public class StepContentController {
     @PostMapping("/saveLectureContent")
     public Mono<Void> saveStepContent(@RequestBody StepContent stepContents) {
 
-        log.info("확인 : " + stepContents);
-
         return stepContentService.saveStepContents(stepContents);
     }
+
+    @PatchMapping("/updateLectureContent")
+    public Mono<Void> updateStepContent(@RequestBody StepContent stepContents) {
+
+        return stepContentService.updateStepContents(stepContents.getUuid(), stepContents.getTimestamp(), stepContents);
+    }
+
 
     @GetMapping("/getLectureContent")
     public Flux<StepContent> getStepContent() {
@@ -35,9 +41,9 @@ public class StepContentController {
         return stepContentService.getAllStepContents();
     }
 
-    @DeleteMapping("/deleteLectureContent/{stepName}")
-    public Mono<Void> deleteLectureContentMethod(@PathVariable String stepName) {
-
-        return stepContentService.deleteContent(stepName);
+    @DeleteMapping("/deleteLectureContent/{uuid}/{timestamp}")
+    public Mono<Void> deleteLectureContent(@PathVariable String uuid, @PathVariable String timestamp) {
+        return stepContentService.deleteContent(uuid, timestamp);
     }
+
 }

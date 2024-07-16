@@ -24,8 +24,15 @@ public class StepContentServiceImpl implements StepContentService {
     }
 
     @Override
-    public Mono<Void> deleteContent(String stepName){
-        return stepContentRepository.deleteByStepName(stepName);
+    public Mono<Void> deleteContent(String uuid, String timestamp) {
+        return stepContentRepository.deleteByStepName(uuid,timestamp);
+
     }
+
+    @Override
+    public Mono<Void> updateStepContents(String uuid, String timestamp, StepContent stepContents) {
+        return stepContentRepository.updateStepContent(uuid,timestamp,stepContents);
+    }
+
 
 }

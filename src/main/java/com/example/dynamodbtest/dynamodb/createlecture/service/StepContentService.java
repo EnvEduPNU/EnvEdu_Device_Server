@@ -13,5 +13,7 @@ public interface StepContentService {
 
     Flux<StepContent> getAllStepContents();
 
-    Mono<Void> deleteContent(String stepName);
+    Mono<Void> deleteContent(String uuid, String timestamp);
+
+    Mono<Void> updateStepContents(String uuid, String timestamp, StepContent stepContents);
 }

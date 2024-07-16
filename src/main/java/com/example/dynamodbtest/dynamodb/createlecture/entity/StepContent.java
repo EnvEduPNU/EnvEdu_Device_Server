@@ -15,14 +15,27 @@ import java.util.List;
 @DynamoDBTable(tableName = "StepContent")
 public class StepContent {
 
+
+    public StepContent(String uuid, String timestamp) {
+        this.uuid = uuid;
+        this.timestamp = timestamp;
+    }
+
     @DynamoDBHashKey
+    private String uuid;
+
+    @DynamoDBRangeKey
+    private String timestamp;
+
+    @DynamoDBAttribute
     private String stepName;
+
+    @DynamoDBAttribute
+    private int stepCount;
 
     @DynamoDBAttribute
     private List<ContentWrapper> contents;
 
-    @DynamoDBAttribute
-    private int stepCount;
 
     @Getter
     @Setter
@@ -31,6 +44,7 @@ public class StepContent {
     @AllArgsConstructor
     @DynamoDBDocument
     public static class ContentWrapper {
+
         @DynamoDBAttribute
         private String contentName;
 
