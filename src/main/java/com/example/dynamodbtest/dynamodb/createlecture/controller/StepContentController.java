@@ -37,7 +37,7 @@ public class StepContentController {
 
     @GetMapping("/getLectureContent")
     public Flux<StepContent> getStepContent() {
-        log.info("Lecure Content Called : ");
+        log.info("Lecure Content Called? : ");
         return stepContentService.getAllStepContents();
     }
 
@@ -45,5 +45,6 @@ public class StepContentController {
     public Mono<Void> deleteLectureContent(@PathVariable String uuid, @PathVariable String timestamp) {
         return stepContentService.deleteContent(uuid, timestamp);
     }
+
 
 }
