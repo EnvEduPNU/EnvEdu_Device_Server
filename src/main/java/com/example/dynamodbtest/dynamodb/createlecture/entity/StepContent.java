@@ -28,6 +28,9 @@ public class StepContent {
     private String timestamp;
 
     @DynamoDBAttribute
+    private String username;
+
+    @DynamoDBAttribute
     private String stepName;
 
     @DynamoDBAttribute
@@ -68,6 +71,12 @@ public class StepContent {
         @DynamoDBTypeConverted(converter = JsonConverter.class)
         @DynamoDBAttribute
         private Object content;
+
+        @DynamoDBAttribute
+        private int x;
+
+        @DynamoDBAttribute
+        private int y;
     }
 }
 
