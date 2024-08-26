@@ -1,7 +1,6 @@
 package com.example.dynamodbtest.dynamodb.createlecture.entity;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-
 import com.example.dynamodbtest.dynamodb.createlecture.util.JsonConverter;
 import lombok.*;
 
@@ -12,11 +11,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamoDBTable(tableName = "StepContent")
-public class StepContent {
+@DynamoDBTable(tableName = "AssignmentStepContent")
+public class AssignmentStepContent {
 
 
-    public StepContent(String uuid, String timestamp) {
+    public AssignmentStepContent(String uuid, String timestamp) {
         this.uuid = uuid;
         this.timestamp = timestamp;
     }
@@ -24,7 +23,7 @@ public class StepContent {
     @DynamoDBHashKey
     private String uuid;
 
-    @DynamoDBRangeKey
+    @DynamoDBAttribute
     private String timestamp;
 
     @DynamoDBAttribute
