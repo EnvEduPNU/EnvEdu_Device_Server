@@ -66,7 +66,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://new.greenseed.or.kr"));  // 허용할 출처
+        configuration.setAllowedOrigins(Arrays.asList("https://new.greenseed.or.kr", "http://localhost:3000"));  // 허용할 출처
 //        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));  // 허용할 출처
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));  // 허용할 HTTP 메소드
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With","X-Previous-Image-URL"));  // 허용할 헤더
