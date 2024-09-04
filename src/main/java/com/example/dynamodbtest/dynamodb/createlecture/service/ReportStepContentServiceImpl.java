@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class ReportStepContentServiceImpl implements ReportStepContentService {
@@ -35,7 +37,7 @@ public class ReportStepContentServiceImpl implements ReportStepContentService {
     }
 
     @Override
-    public Flux<ReportStepContent> getStepContentByUuid(String uuid) {
+    public List<ReportStepContent> getStepContentByUuid(List<String> uuid) {
         return  reportStepContentRepository.getStepContentByUuid(uuid);
     }
 }

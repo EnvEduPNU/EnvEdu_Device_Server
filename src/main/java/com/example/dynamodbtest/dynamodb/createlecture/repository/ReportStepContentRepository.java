@@ -3,14 +3,13 @@ package com.example.dynamodbtest.dynamodb.createlecture.repository;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.example.dynamodbtest.dynamodb.createlecture.entity.AssignmentStepContent;
 import com.example.dynamodbtest.dynamodb.createlecture.entity.ReportStepContent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -31,21 +30,42 @@ public class ReportStepContentRepository {
         return Mono.fromCallable(() -> dynamoDBMapper.load(ReportStepContent.class, stepName));
     }
 
-    public Flux<ReportStepContent> getStepContentByUuid(String uuid) {
-        // Partition key를 설정하여 해당 UUID로 조회
-        ReportStepContent partitionKey = new ReportStepContent();
-        partitionKey.setUuid(uuid);
+    public List<ReportStepContent> getStepContentByUuid(List<String> uuids) {
+        // Map으로 여러 항목을 한 번에 가져오기 위한 준비
+        Map<String, List<Object>> batchLoadMap = new HashMap<>();
 
-        // DynamoDBQueryExpression을 사용하여 UUID에 해당하는 모든 항목을 조회
-        DynamoDBQueryExpression<ReportStepContent> queryExpression = new DynamoDBQueryExpression<ReportStepContent>()
-                .withHashKeyValues(partitionKey);
+        // 각 UUID에 해당하는 쿼리 결과를 저장할 리스트 생성
+        List<ReportStepContent> resultList = new ArrayList<>();
 
-        // 여러 개의 결과를 가져오기 위해 query를 사용
-        List<ReportStepContent> result = dynamoDBMapper.query(ReportStepContent.class, queryExpression);
+        // UUID 리스트를 순회하며 각 항목을 DynamoDB에서 조회
+        for (String uuid : uuids) {
+            // UUID에 해당하는 파티션 키 값을 설정하여 쿼리
+            ReportStepContent partitionKey = new ReportStepContent();
+            partitionKey.setUuid(uuid);
 
-        // 결과를 Flux로 변환하여 반환
-        return Flux.fromIterable(result);
+            // DynamoDBQueryExpression을 사용하여 해당 UUID에 맞는 데이터 조회
+            DynamoDBQueryExpression<ReportStepContent> queryExpression = new DynamoDBQueryExpression<ReportStepContent>()
+                    .withHashKeyValues(partitionKey);
+
+            // 조회된 결과를 리스트에 추가
+            List<ReportStepContent> queryResult = dynamoDBMapper.query(ReportStepContent.class, queryExpression);
+            resultList.addAll(queryResult);
+        }
+
+        if (resultList.isEmpty()) {
+            log.warn("No results found for the provided UUIDs.");
+            return Collections.emptyList(); // 결과가 없을 경우 빈 리스트 반환
+        }
+
+        // 로그 출력
+        log.info("레포지토리에서 UUID에 해당하는 ReportStepContent 항목 수: " + resultList.size());
+
+        return resultList;
     }
+
+
+
+
 
 
     public Mono<Void> deleteByStepName(String uuid, String timestamp) {
