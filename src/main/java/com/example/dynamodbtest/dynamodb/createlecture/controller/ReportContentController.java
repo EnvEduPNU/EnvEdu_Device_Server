@@ -42,11 +42,15 @@ public class ReportContentController {
         return reportStepContentService.getAllStepContents();
     }
 
-    @GetMapping("/getstep")
-    public Flux<ReportStepContent> getStepContentByUuid(@RequestParam String uuid) {
-        log.info("Lecture Content Called for UUID: " + uuid);
-        return reportStepContentService.getStepContentByUuid(uuid);
+    @PostMapping("/getstep")
+    public List<ReportStepContent> getStepContentByUuid(@RequestBody List<String> uuids) {
+        log.info("Lecture Content Called for UUID: " + uuids.toString());
+
+        List<ReportStepContent> reportStepContentFlux = reportStepContentService.getStepContentByUuid(uuids);
+
+        return reportStepContentFlux;
     }
+
 
 
 

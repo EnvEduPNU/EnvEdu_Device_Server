@@ -5,6 +5,8 @@ import com.example.dynamodbtest.dynamodb.createlecture.entity.ReportStepContent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 public interface ReportStepContentService {
     Mono<Void> saveStepContents(ReportStepContent reportStepContent);
 
@@ -14,5 +16,5 @@ public interface ReportStepContentService {
 
     Mono<Void> updateStepContents(String uuid, String timestamp, ReportStepContent reportStepContent);
 
-    Flux<ReportStepContent> getStepContentByUuid(String uuid);
+    List<ReportStepContent> getStepContentByUuid(List<String> uuid);
 }
