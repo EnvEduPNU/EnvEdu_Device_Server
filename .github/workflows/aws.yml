@@ -85,7 +85,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download JAR for deployment
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: jar-files
           path: build/libs
