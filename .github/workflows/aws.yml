@@ -70,7 +70,7 @@ jobs:
         run: ls -alh target/  # Corrected from build/libs to target/ if using Maven default directory structure
 
       - name: Upload JAR for deployment
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: jar-files
           path: target/*.jar  # Corrected path for Maven default output directory
