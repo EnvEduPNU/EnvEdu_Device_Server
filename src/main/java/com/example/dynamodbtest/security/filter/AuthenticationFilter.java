@@ -111,18 +111,21 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
                             return onAuthenticationSuccess(null, exchange, chain);
                         } catch (Exception e) {
                             log.info("Invalid JWT token");
-                            return Mono.empty();
+                            return Mono.error(e);
                         }
                     } else {
                         log.info("Authorization header does not start with Bearer");
-                        return Mono.empty();
+                        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+
+                        return exchange.getResponse().setComplete();
                     }
                 })
                 // Authorization 헤더가 없을 경우 사용자 이름과 비밀번호로 인증 시도
                 .switchIfEmpty(authenticateByUsernameAndPassword(exchange, chain))
                 .onErrorResume(e -> {
                     log.error("Authentication failed", e);
-                    return Mono.empty();
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                    return exchange.getResponse().setComplete();
                 });
 
     }
@@ -142,8 +145,11 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
                                 .onErrorResume(AuthenticationException.class, e -> onAuthenticationFailure(e, exchange, chain));
                     } catch (Exception e) {
                         log.error("Error during username/password authentication", e);
-                        return Mono.error(e);
-                    } finally {
+                        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+
+                        return exchange.getResponse().setComplete();
+                    }
+                    finally {
                         DataBufferUtils.release(dataBuffer);
                     }
                 });
