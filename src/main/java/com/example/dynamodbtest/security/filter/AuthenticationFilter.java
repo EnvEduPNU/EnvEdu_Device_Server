@@ -24,6 +24,7 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -111,13 +112,11 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
                             return onAuthenticationSuccess(null, exchange, chain);
                         } catch (Exception e) {
                             log.info("Invalid JWT token");
-                            return Mono.error(e);
+                            return Mono.empty();
                         }
                     } else {
                         log.info("Authorization header does not start with Bearer");
-                        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-
-                        return exchange.getResponse().setComplete();
+                        return Mono.empty();
                     }
                 })
                 // Authorization 헤더가 없을 경우 사용자 이름과 비밀번호로 인증 시도
@@ -132,6 +131,11 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
 
     // 사용자 이름과 비밀번호 인증 시도
     private Mono<Void> authenticateByUsernameAndPassword(ServerWebExchange exchange, WebFilterChain chain) {
+
+        if(exchange.getRequest().getHeaders().getFirst("Authorization")==null){
+//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+//            return exchange.getResponse().setComplete();
+        }
 
         return DataBufferUtils.join(exchange.getRequest().getBody())
                 .flatMap(dataBuffer -> {
