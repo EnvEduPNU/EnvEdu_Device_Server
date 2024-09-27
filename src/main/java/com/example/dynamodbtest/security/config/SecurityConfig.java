@@ -83,7 +83,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/air-quality/**", configuration);
         source.registerCorsConfiguration("/api/**", configuration);
         source.registerCorsConfiguration("/student/**", configuration);
-        source.registerCorsConfiguration("/ws/**", null);
+        source.registerCorsConfiguration("/ws/**", configuration);
         source.registerCorsConfiguration("/screen-share/**", null);
 
         return source;
