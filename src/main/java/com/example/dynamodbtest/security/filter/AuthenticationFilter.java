@@ -132,16 +132,13 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
     // 사용자 이름과 비밀번호 인증 시도
     private Mono<Void> authenticateByUsernameAndPassword(ServerWebExchange exchange, WebFilterChain chain) {
 
-        if(exchange.getRequest().getHeaders().getFirst("Authorization")==null){
-//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-//            return exchange.getResponse().setComplete();
-        }
-
         return DataBufferUtils.join(exchange.getRequest().getBody())
                 .flatMap(dataBuffer -> {
                     try {
                         String body = dataBuffer.toString(StandardCharsets.UTF_8);
                         LoginDTO loginDTO = objectMapper.readValue(body, LoginDTO.class);
+
+                        log.info("로그인 확인 : " + loginDTO);
 
                         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
                         return authenticationManager.authenticate(authenticationToken)
@@ -225,6 +222,13 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
 
     }
 
+    // 인증 실패 시 메서드
+    private Mono<Void> onAuthenticationFailure(AuthenticationException e, ServerWebExchange exchange, WebFilterChain chain) {
+        log.info("Authentication failed: {}", e.getMessage());
+        return Mono.error(e);
+    }
+
+
     private Mono<Void> onAuthenticationSuccessWebsocket(Authentication authentication, ServerWebExchange exchange, WebFilterChain chain) {
 
         String tokenInParams = exchange.getRequest().getQueryParams().getFirst("token");
@@ -253,10 +257,6 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
         return chain.filter(mutatedExchange);
     }
 
-    // 인증 실패 시 메서드
-    private Mono<Void> onAuthenticationFailure(AuthenticationException e, ServerWebExchange exchange, WebFilterChain chain) {
-        log.error("Authentication failed: {}", e.getMessage());
-        return Mono.error(e);
-    }
+
 
 }
