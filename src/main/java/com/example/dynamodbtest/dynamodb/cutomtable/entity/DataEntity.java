@@ -1,13 +1,9 @@
 package com.example.dynamodbtest.dynamodb.cutomtable.entity;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConvertedJson;
-import com.example.dynamodbtest.dynamodb.cutomtable.dto.DataDTO;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.example.dynamodbtest.dynamodb.cutomtable.converter.NumericFieldValueConverter;
 import lombok.Getter;
 import lombok.Setter;
-import software.amazon.awssdk.services.dynamodb.endpoints.internal.Value;
 
 import java.util.List;
 import java.util.Map;
@@ -32,23 +28,24 @@ public class DataEntity {
     @DynamoDBAttribute(attributeName = "userName")
     private String userName;
 
-    // 각 필드는 value와 order를 포함하는 구조로 변경
-    @DynamoDBTypeConvertedJson
+    // numericFields에 커스텀 컨버터 적용
+    @DynamoDBTypeConverted(converter = NumericFieldValueConverter.class)
     @DynamoDBAttribute(attributeName = "numericFields")
-    private List<Map<String, FieldValue>> numericFields;
+    private List<Map<String, Object>> numericFields;
 
+    // stringFields는 DynamoDB JSON 지원을 통해 자동 직렬화
     @DynamoDBTypeConvertedJson
     @DynamoDBAttribute(attributeName = "stringFields")
-    private List<Map<String, FieldValue>> stringFields;
+    private List<Map<String, StringFieldValue>> stringFields;
 
     @Getter
     @Setter
-    public static class FieldValue {
+    public static class StringFieldValue {
         private String value;
         private int order;
 
-        // FieldValue의 생성자
-        public FieldValue(String value, int order) {
+        // StringFieldValue 생성자 - 문자열 값을 허용
+        public StringFieldValue(String value, int order) {
             this.value = value;
             this.order = order;
         }
