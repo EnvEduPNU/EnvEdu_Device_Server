@@ -1,6 +1,7 @@
 package com.example.dynamodbtest.dynamodb.cutomtable.dto;
 
-import com.example.dynamodbtest.dynamodb.cutomtable.entity.DataEntity;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.example.dynamodbtest.dynamodb.cutomtable.converter.NumericFieldValueConverter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,13 +18,14 @@ public class DataDTO {
     private String dataLabel;
     private String userName;
 
-    // 각 필드는 value와 order를 포함하는 구조로 수정
-    private List<Map<String, FieldValue>> numericFields;
-    private List<Map<String, FieldValue>> stringFields;
+    // NumericFieldValueConverter를 사용하여 JSON으로 직렬화/역직렬화
+    private List<Map<String, NumericFieldValue>> numericFields;
+
+    private List<Map<String, StringFieldValue>> stringFields;
 
     // 생성자
     public DataDTO(String dataUUID, String saveDate, String memo, String dataLabel, String userName,
-                   List<Map<String, FieldValue>> numericFields, List<Map<String, FieldValue>> stringFields) {
+                   List<Map<String, NumericFieldValue>> numericFields, List<Map<String, StringFieldValue>> stringFields) {
         this.dataUUID = dataUUID;
         this.saveDate = saveDate;
         this.memo = memo;
@@ -32,16 +34,33 @@ public class DataDTO {
         this.numericFields = numericFields;
         this.stringFields = stringFields;
     }
-    
 
     @Getter
     @Setter
-    public static class FieldValue {
+    public static class NumericFieldValue {
+        private Object value; // int 또는 double 값을 저장할 수 있는 Number 타입
+        private int order;
+
+        // NumericFieldValue 생성자
+        public NumericFieldValue(Number value, int order) {
+            if (value instanceof Integer || value instanceof Double) {
+                this.value = value;
+            } else {
+                throw new IllegalArgumentException("Invalid numeric value type. Must be an int or double.");
+            }
+            this.order = order;
+        }
+    }
+
+
+    @Getter
+    @Setter
+    public static class StringFieldValue {
         private String value;
         private int order;
 
-        // FieldValue의 생성자
-        public FieldValue(String value, int order) {
+        // StringFieldValue 생성자 - 문자열 값만 허용
+        public StringFieldValue(String value, int order) {
             this.value = value;
             this.order = order;
         }

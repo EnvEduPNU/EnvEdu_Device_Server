@@ -1,5 +1,6 @@
 package com.example.dynamodbtest.dynamodb.cutomtable.controller;
 import com.example.dynamodbtest.dynamodb.cutomtable.dto.DataDTO;
+import com.example.dynamodbtest.dynamodb.cutomtable.entity.DataEntity;
 import com.example.dynamodbtest.dynamodb.cutomtable.service.DataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,15 +34,15 @@ public class DataController {
     }
 
     @GetMapping("/list")
-    public Mono<List<DataDTO>> getAllData() {
-        List<DataDTO> dataList = dataService.findAll();
+    public Mono<List<DataEntity>> getAllData() {
+        List<DataEntity> dataList = dataService.findAll();
         return Mono.justOrEmpty(dataList);
     }
 
     // ID로 데이터 조회 메서드 추가
     @GetMapping("/{id}")
-    public Mono<DataDTO> getDataById(@PathVariable String id) {
-        Optional<DataDTO> data = dataService.findById(id);
+    public Mono<DataEntity> getDataById(@PathVariable String id) {
+        Optional<DataEntity> data = dataService.findById(id);
         return Mono.justOrEmpty(data);
     }
 
