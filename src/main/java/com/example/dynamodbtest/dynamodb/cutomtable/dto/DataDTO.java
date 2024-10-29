@@ -1,7 +1,5 @@
 package com.example.dynamodbtest.dynamodb.cutomtable.dto;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
-import com.example.dynamodbtest.dynamodb.cutomtable.converter.NumericFieldValueConverter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +12,7 @@ public class DataDTO {
 
     private String dataUUID;
     private String saveDate;
+    private String title;
     private String memo;
     private String dataLabel;
     private String userName;
@@ -24,10 +23,11 @@ public class DataDTO {
     private List<Map<String, StringFieldValue>> stringFields;
 
     // 생성자
-    public DataDTO(String dataUUID, String saveDate, String memo, String dataLabel, String userName,
+    public DataDTO(String dataUUID, String saveDate, String title, String memo, String dataLabel, String userName,
                    List<Map<String, NumericFieldValue>> numericFields, List<Map<String, StringFieldValue>> stringFields) {
         this.dataUUID = dataUUID;
         this.saveDate = saveDate;
+        this.title = title;
         this.memo = memo;
         this.dataLabel = dataLabel;
         this.userName = userName;
