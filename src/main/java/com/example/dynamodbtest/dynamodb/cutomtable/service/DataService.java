@@ -22,6 +22,7 @@ public class DataService {
         DataEntity entity = new DataEntity();
         entity.setDataUUID(dataDTO.getDataUUID());
         entity.setSaveDate(dataDTO.getSaveDate());
+        entity.setTitle(dataDTO.getTitle());
         entity.setMemo(dataDTO.getMemo());
         entity.setDataLabel(dataDTO.getDataLabel());
         entity.setUserName(dataDTO.getUserName());

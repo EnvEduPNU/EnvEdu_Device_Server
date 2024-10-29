@@ -19,6 +19,9 @@ public class DataEntity {
     @DynamoDBAttribute(attributeName = "saveDate")
     private String saveDate;
 
+    @DynamoDBAttribute(attributeName = "title")
+    private String title;
+
     @DynamoDBAttribute(attributeName = "memo")
     private String memo;
 
