@@ -1,6 +1,7 @@
 package com.example.dynamodbtest.security.authentication;
 
 import com.example.dynamodbtest.security.principal.CustomUserDetails;
+import com.example.dynamodbtest.security.util.PasswordUtils;
 import com.example.dynamodbtest.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,7 +29,8 @@ public class CustomReactiveAuthenticationManager implements ReactiveAuthenticati
         return userRepository.findByUsername(username)
                 .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found: " + username))) // 아이디가 없을 때 예외 처리
                 .flatMap(user -> {
-                    if (passwordEncoder.matches(password, user.getPassword())) {
+                    // 저장된 해시된 비밀번호와 입력된 비밀번호 비교
+                    if (PasswordUtils.verifyPassword(password, user.getPassword())) { // 해싱된 비밀번호 비교 메서드 사용
                         CustomUserDetails userDetails = new CustomUserDetails(user);
                         return Mono.just(new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities()));
                     } else {
@@ -36,5 +38,6 @@ public class CustomReactiveAuthenticationManager implements ReactiveAuthenticati
                     }
                 });
     }
+
 
 }
