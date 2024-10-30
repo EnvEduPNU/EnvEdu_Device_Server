@@ -47,6 +47,12 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         log.info("Filter entered");
 
+        // "/api/user/register" 경로 요청이 오면 인증 없이 통과 (회원가입 경로)
+        String path = exchange.getRequest().getURI().getPath();
+        if (path.equals("/api/user/register")) {
+            return chain.filter(exchange);  // 필터를 건너뛰고 다음 필터 체인으로 넘어감
+        }
+
 
         // WebSocket 경로 확인
         if (exchange.getRequest().getURI().getPath().startsWith("/ws")) {
