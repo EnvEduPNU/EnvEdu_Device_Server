@@ -34,8 +34,8 @@ public class DataController {
     }
 
     @GetMapping("/list")
-    public Mono<List<DataEntity>> getAllData() {
-        List<DataEntity> dataList = dataService.findAll();
+    public Mono<List<DataEntity>> getAllData(@RequestParam String username) {
+        List<DataEntity> dataList = dataService.findAllByUserName(username);
         return Mono.justOrEmpty(dataList);
     }
 

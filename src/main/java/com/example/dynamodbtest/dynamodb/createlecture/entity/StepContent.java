@@ -34,6 +34,9 @@ public class StepContent {
     private String stepName;
 
     @DynamoDBAttribute
+    private String thumbImg;
+
+    @DynamoDBAttribute
     private int stepCount;
 
     @DynamoDBAttribute
