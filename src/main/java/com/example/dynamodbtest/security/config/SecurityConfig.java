@@ -81,6 +81,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/datafolder/**", configuration);
         source.registerCorsConfiguration("/ocean-quality/**", configuration);
         source.registerCorsConfiguration("/air-quality/**", configuration);
+        source.registerCorsConfiguration("/city-air-quality/**", configuration);
         source.registerCorsConfiguration("/api/**", configuration);
         source.registerCorsConfiguration("/student/**", configuration);
         source.registerCorsConfiguration("/ws/**", null);
