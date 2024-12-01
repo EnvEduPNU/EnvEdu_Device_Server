@@ -8,6 +8,10 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 @Configuration
 public class DynamoDBConfig {
@@ -32,5 +36,17 @@ public class DynamoDBConfig {
     @Bean
     public DynamoDBMapper dynamoDBMapper(AmazonDynamoDB amazonDynamoDB) {
         return new DynamoDBMapper(amazonDynamoDB);
+    }
+
+    @Bean
+    public DynamoDbClient dynamoDbClient() {
+        return DynamoDbClient.builder()
+                .region(Region.of(awsRegion)) // @Value로 가져온 리전 값 사용
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(awsAccessKeyId, awsSecretKey)
+                        )
+                )
+                .build();
     }
 }

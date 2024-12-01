@@ -1,6 +1,7 @@
 package com.example.dynamodbtest.dynamodb.createlecture.controller;
 
 import com.example.dynamodbtest.dynamodb.createlecture.entity.StepContent;
+import com.example.dynamodbtest.dynamodb.createlecture.entity.ThumbImgDTO;
 import com.example.dynamodbtest.dynamodb.createlecture.service.StepContentService;
 import com.example.dynamodbtest.dynamodb.createlecture.service.StepContentServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,12 @@ public class StepContentController {
 
         return stepContentService.updateStepContents(stepContents.getUuid(), stepContents.getTimestamp(), stepContents);
     }
+
+    @PatchMapping("/updateThumbImg")
+    public Mono<Void> updateThumbImg(@RequestBody ThumbImgDTO thumbImgDTO) {
+        return stepContentService.updateThumbImg(thumbImgDTO.getUuid(), thumbImgDTO.getTimestamp(), thumbImgDTO.getThumbImg());
+    }
+
 
 
     @GetMapping("/getLectureContent")
