@@ -3,20 +3,24 @@ package com.example.dynamodbtest.dynamodb.createlecture.repository;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.example.dynamodbtest.dynamodb.createlecture.entity.StepContent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
+
+import java.util.Map;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class StepContentRepository {
 
     private final DynamoDBMapper dynamoDBMapper;
-
-    public StepContentRepository(DynamoDBMapper dynamoDBMapper) {
-        this.dynamoDBMapper = dynamoDBMapper;
-    }
+    private final DynamoDbClient dynamoDbClient;
 
     public Mono<StepContent> save(StepContent stepContent) {
         return Mono.fromRunnable(() -> dynamoDBMapper.save(stepContent))
@@ -73,5 +77,30 @@ public class StepContentRepository {
             }
         }).then();
     }
+
+    public Mono<Void> updateThumbImg(String uuid, String timestamp, String thumbImg) {
+        return Mono.fromRunnable(() -> {
+            // 기존 객체 로드
+            StepContent existingEntity = dynamoDBMapper.load(StepContent.class, uuid, timestamp);
+
+            if (existingEntity != null) {
+                log.info("existingEntity: {}", existingEntity);
+
+                // thumbImg 속성만 업데이트
+                existingEntity.setThumbImg(thumbImg);
+
+                // 저장
+                dynamoDBMapper.save(existingEntity);
+
+                log.info("thumbImg가 성공적으로 업데이트되었습니다: {}", thumbImg);
+            } else {
+                log.error("Entity를 찾을 수 없습니다. UUID: {}, Timestamp: {}", uuid, timestamp);
+                throw new RuntimeException("Entity not found");
+            }
+        }).then();
+    }
+
+
+
 
 }

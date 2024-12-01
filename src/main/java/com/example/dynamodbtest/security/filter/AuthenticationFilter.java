@@ -101,7 +101,9 @@ public class AuthenticationFilter extends AuthenticationWebFilter {
         }
 
         // WebSocket이 아닌 경우 일반 HTTP 요청 처리
-        Mono<String> authHeader = Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst("Authorization"));
+        Mono<String> authHeader = Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst("Authorization"))
+                .doOnNext(header -> log.info("jwt 확인: " + header));
+
 
         // JWT 토큰 있으면 통과
         return authHeader

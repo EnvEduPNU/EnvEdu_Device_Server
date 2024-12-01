@@ -16,4 +16,6 @@ public interface StepContentService {
     Mono<Void> deleteContent(String uuid, String timestamp);
 
     Mono<Void> updateStepContents(String uuid, String timestamp, StepContent stepContents);
+
+    Mono<Void> updateThumbImg(String uuid, String timestamp, String thumbImg);
 }

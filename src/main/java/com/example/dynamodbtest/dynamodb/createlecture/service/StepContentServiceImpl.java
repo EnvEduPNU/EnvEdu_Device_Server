@@ -6,12 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 @RequiredArgsConstructor
 @Service
 public class StepContentServiceImpl implements StepContentService {
 
     private final StepContentRepository stepContentRepository;
+    private final DynamoDbClient dynamoDbClient;
+
 
     @Override
     public Mono<Void> saveStepContents(StepContent stepContent) {
@@ -33,6 +36,13 @@ public class StepContentServiceImpl implements StepContentService {
     public Mono<Void> updateStepContents(String uuid, String timestamp, StepContent stepContents) {
         return stepContentRepository.updateStepContent(uuid,timestamp,stepContents);
     }
+
+    @Override
+    public Mono<Void> updateThumbImg(String uuid, String timestamp, String thumbImg) {
+        return stepContentRepository.updateThumbImg(uuid,timestamp,thumbImg);
+    }
+
+
 
 
 }
