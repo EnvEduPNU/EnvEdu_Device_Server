@@ -20,7 +20,6 @@ import java.util.Map;
 public class StepContentRepository {
 
     private final DynamoDBMapper dynamoDBMapper;
-    private final DynamoDbClient dynamoDbClient;
 
     public Mono<StepContent> save(StepContent stepContent) {
         return Mono.fromRunnable(() -> dynamoDBMapper.save(stepContent))
@@ -34,7 +33,7 @@ public class StepContentRepository {
     public Mono<Void> deleteByStepName(String uuid, String timestamp) {
         return Mono.fromRunnable(() -> {
             // DynamoDBMapper를 사용하여 아이템 로드
-            StepContent stepContent = dynamoDBMapper.load(StepContent.class, uuid, timestamp);
+            StepContent stepContent = dynamoDBMapper.load(StepContent.class, uuid);
 
             log.info("uuid : " + uuid);
             log.info("timestamp : " + timestamp);
@@ -50,6 +49,10 @@ public class StepContentRepository {
     public Flux<StepContent> findAll() {
         return Mono.fromCallable(() -> dynamoDBMapper.scan(StepContent.class, new DynamoDBScanExpression()))
                 .flatMapMany(Flux::fromIterable);
+    }
+
+    public StepContent findOne(String uuid) {
+        return dynamoDBMapper.load(StepContent.class, uuid);
     }
 
     public Mono<Void> updateStepContent(String uuid, String timestamp, StepContent updatedContent) {
@@ -81,7 +84,7 @@ public class StepContentRepository {
     public Mono<Void> updateThumbImg(String uuid, String timestamp, String thumbImg) {
         return Mono.fromRunnable(() -> {
             // 기존 객체 로드
-            StepContent existingEntity = dynamoDBMapper.load(StepContent.class, uuid, timestamp);
+            StepContent existingEntity = dynamoDBMapper.load(StepContent.class, uuid);
 
             if (existingEntity != null) {
                 log.info("existingEntity: {}", existingEntity);

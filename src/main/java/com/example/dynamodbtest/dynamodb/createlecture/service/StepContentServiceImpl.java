@@ -6,14 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 @RequiredArgsConstructor
 @Service
 public class StepContentServiceImpl implements StepContentService {
 
     private final StepContentRepository stepContentRepository;
-    private final DynamoDbClient dynamoDbClient;
 
 
     @Override
@@ -24,6 +22,11 @@ public class StepContentServiceImpl implements StepContentService {
     @Override
     public Flux<StepContent> getAllStepContents() {
         return stepContentRepository.findAll();
+    }
+
+    @Override
+    public StepContent getStepContent(String uuid) {
+        return stepContentRepository.findOne(uuid);
     }
 
     @Override

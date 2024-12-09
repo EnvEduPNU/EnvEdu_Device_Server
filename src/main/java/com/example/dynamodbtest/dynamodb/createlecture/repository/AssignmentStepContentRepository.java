@@ -46,6 +46,23 @@ public class AssignmentStepContentRepository {
         return Flux.fromIterable(result);
     }
 
+    public AssignmentStepContent findByUuidAndUsername(String uuid, String username) {
+        AssignmentStepContent queryObject = new AssignmentStepContent();
+        queryObject.setUuid(uuid);
+        queryObject.setUsername(username);
+
+        DynamoDBQueryExpression<AssignmentStepContent> queryExpression = new DynamoDBQueryExpression<AssignmentStepContent>()
+                .withHashKeyValues(queryObject)
+                .withConsistentRead(false);
+
+        List<AssignmentStepContent> results = dynamoDBMapper.query(AssignmentStepContent.class, queryExpression);
+
+        if (results != null && !results.isEmpty()) {
+            return results.get(0); // 첫 번째 결과 반환
+        }
+        return null; // 결과가 없을 경우 null 반환
+    }
+
 
     public Mono<Void> deleteByStepName(String uuid, String timestamp) {
         return Mono.fromRunnable(() -> {

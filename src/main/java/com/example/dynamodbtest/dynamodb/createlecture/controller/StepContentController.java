@@ -48,6 +48,11 @@ public class StepContentController {
         return stepContentService.getAllStepContents();
     }
 
+    @GetMapping("/getLectureContentOne")
+    public StepContent getStepContentOne(@RequestParam String uuid) {
+        return stepContentService.getStepContent(uuid);
+    }
+
     @DeleteMapping("/deleteLectureContent/{uuid}/{timestamp}")
     public Mono<Void> deleteLectureContent(@PathVariable String uuid, @PathVariable String timestamp) {
         return stepContentService.deleteContent(uuid, timestamp);
