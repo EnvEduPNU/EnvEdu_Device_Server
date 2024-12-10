@@ -3,13 +3,16 @@ package com.example.dynamodbtest.dynamodb.createlecture.repository;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.example.dynamodbtest.dynamodb.createlecture.entity.AssignmentStepContent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -49,19 +52,24 @@ public class AssignmentStepContentRepository {
     public AssignmentStepContent findByUuidAndUsername(String uuid, String username) {
         AssignmentStepContent queryObject = new AssignmentStepContent();
         queryObject.setUuid(uuid);
-        queryObject.setUsername(username);
+
+        Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+        expressionAttributeValues.put(":username", new AttributeValue().withS(username));
 
         DynamoDBQueryExpression<AssignmentStepContent> queryExpression = new DynamoDBQueryExpression<AssignmentStepContent>()
                 .withHashKeyValues(queryObject)
+                .withFilterExpression("username = :username")
+                .withExpressionAttributeValues(expressionAttributeValues)
                 .withConsistentRead(false);
 
         List<AssignmentStepContent> results = dynamoDBMapper.query(AssignmentStepContent.class, queryExpression);
 
         if (results != null && !results.isEmpty()) {
-            return results.get(0); // 첫 번째 결과 반환
+            return results.get(0);
         }
-        return null; // 결과가 없을 경우 null 반환
+        return null;
     }
+
 
 
     public Mono<Void> deleteByStepName(String uuid, String timestamp) {
