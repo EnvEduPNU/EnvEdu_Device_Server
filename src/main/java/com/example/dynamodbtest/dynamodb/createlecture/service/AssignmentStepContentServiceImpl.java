@@ -38,4 +38,8 @@ public class AssignmentStepContentServiceImpl implements AssignmentStepContentSe
     public Flux<AssignmentStepContent> getStepContentByUuid(String uuid) {
         return  assignmentStepContentRepository.getStepContentByUuid(uuid);
     }
+
+    public AssignmentStepContent getStepContentByUuidAndUsername(String uuid, String username) {
+        return  assignmentStepContentRepository.findByUuidAndUsername(uuid,username);
+    }
 }

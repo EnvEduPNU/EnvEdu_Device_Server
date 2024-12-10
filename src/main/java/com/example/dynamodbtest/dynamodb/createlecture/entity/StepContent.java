@@ -25,7 +25,7 @@ public class StepContent {
     @DynamoDBHashKey
     private String uuid;
 
-    @DynamoDBRangeKey
+    @DynamoDBAttribute
     private String timestamp;
 
     @DynamoDBAttribute
