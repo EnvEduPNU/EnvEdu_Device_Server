@@ -51,7 +51,13 @@ public class AssignmentStepContentController {
     @GetMapping("/get-step-one")
     public AssignmentStepContent getStepContentByUuidAndUsername(@RequestParam String uuid, String username) {
         log.info("Lecture Content Called for UUID: " + uuid);
-        return assignmentStepContentService.getStepContentByUuidAndUsername(uuid,username);
+        log.info("Lecture Content Called for username: " + username);
+
+        AssignmentStepContent assignmentStepContent = assignmentStepContentService.getStepContentByUuidAndUsername(uuid,username);
+
+        log.info("Lecture Check : " + assignmentStepContent);
+
+        return assignmentStepContent;
     }
 
 
