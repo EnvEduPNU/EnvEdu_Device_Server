@@ -15,6 +15,8 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+// 학생의 과제를 각 스텝별로 저장하는 메서드로 개발되었고 사용되었으나
+// 기획 수정 이후로 사용되지 않음. 현재 entity table 이름으로 aws dynamodb에 테이블 존재함.
 @RequestMapping("/api/assignment")
 public class AssignmentStepContentController {
 
