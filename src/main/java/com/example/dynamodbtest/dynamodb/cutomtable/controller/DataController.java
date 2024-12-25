@@ -16,6 +16,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
+// 커스텀 데이터 저장/삭제/조회 메서드 (aws dynamodb에 저장되며 테이블 이름: CustomData)
 @RequestMapping("/api/custom")
 public class DataController {
 

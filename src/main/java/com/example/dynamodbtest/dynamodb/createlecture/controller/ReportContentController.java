@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+// 학생의 보고서 저장 클래스, 각 path의 역할에 맞게 메서드 수행중 (ex save -> 보고서 저장)
 @RequestMapping("/api/report")
 public class ReportContentController {
 

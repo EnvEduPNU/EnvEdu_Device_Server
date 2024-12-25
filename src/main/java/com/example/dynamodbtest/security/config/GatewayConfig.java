@@ -32,12 +32,13 @@ public class GatewayConfig {
         return new WebSocketHandlerAdapter(webSocketService);
     }
 
+    // 게이트 웨이 빈, 이 서버에 메서드가 없으면 rdb 쓰는 서버로 라우팅 한다. 라우팅 포트는 server.greenseed / 로컬은 8081
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         log.info("Gateway 설정 완료!");
 
         return builder.routes()
-                .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**","/ocean-quality/**", "/air-quality/**","/city-air-quality/**","/student/**")
+                .route("example_route", r -> r.path("/login/**","/seed/**","/mydata/**","/datafolder/**","/api/**","/ocean-quality/**", "/air-quality/**","/city-air-quality/**","/student/**","/client/**")
                         .filters(f -> f.modifyRequestBody(String.class, String.class, (exchange, body) -> {
                             ServerHttpRequest request = exchange.getRequest();
                             log.info("문제 생길만한 요청헤더!: " + request.getHeaders());

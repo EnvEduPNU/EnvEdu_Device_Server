@@ -69,7 +69,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("https://new.greenseed.or.kr", "http://localhost:3000"));  // 허용할 출처
 //        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));  // 허용할 출처
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));  // 허용할 HTTP 메소드
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With","X-Previous-Image-URL","userName"));  // 허용할 헤더
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With","X-Previous-Image-URL","userName","text/event-stream"));  // 허용할 헤더
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept","userName"));  // 브라우저에서 접근 가능한 헤더
         configuration.setAllowCredentials(true);  // 인증 정보(쿠키, HTTP 인증, SSL 인증 등) 포함 허용
         configuration.setMaxAge(3600L);  // 사전 요청 결과 최대 나이(초)
@@ -84,6 +84,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/city-air-quality/**", configuration);
         source.registerCorsConfiguration("/api/**", configuration);
         source.registerCorsConfiguration("/student/**", configuration);
+        source.registerCorsConfiguration("/client/**", configuration);
         source.registerCorsConfiguration("/ws/**", null);
         source.registerCorsConfiguration("/screen-share/**", null);
 
