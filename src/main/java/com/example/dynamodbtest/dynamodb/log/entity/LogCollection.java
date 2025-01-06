@@ -24,7 +24,7 @@ public class LogCollection {
     private String eclassName;
 
     @DynamoDBAttribute
-    private int stepNum;
+    private Integer stepNum;
 
     @DynamoDBAttribute
     private String username;
@@ -53,7 +53,7 @@ public class LogCollection {
         private String buttonName;
 
         @DynamoDBAttribute
-        private boolean actionSuccess;
+        private Boolean actionSuccess;
 
         @DynamoDBAttribute
         private String memo;
