@@ -49,7 +49,7 @@ public class LogCollectionController {
     }
 
     // Get LogCollections by username
-    @GetMapping("/get/log/{username}")
+    @GetMapping("/get/username/{username}")
     public ResponseEntity<List<LogCollection>> getLogsByUsername(
             @PathVariable String username) {
         List<LogCollection> logs = service.getLogCollectionByUsername(username);
