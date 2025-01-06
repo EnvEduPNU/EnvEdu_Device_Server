@@ -47,6 +47,17 @@ public class LogCollectionRepository {
         return dynamoDBMapper.scan(LogCollection.class, scanExpression);
     }
 
+    // Find LogCollections by username
+    public List<LogCollection> findByUsername(String username) {
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("username = :val1")
+                .withExpressionAttributeValues(Map.of(
+                        ":val1", new AttributeValue().withS(username)
+                ));
+
+        return dynamoDBMapper.scan(LogCollection.class, scanExpression);
+    }
+
     // Find LogCollection by logUuid
     public Optional<LogCollection> findById(String logUuid) {
         LogCollection entity = dynamoDBMapper.load(LogCollection.class, logUuid);

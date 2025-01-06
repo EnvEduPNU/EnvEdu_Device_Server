@@ -33,4 +33,9 @@ public class LogCollectionService {
     public List<LogCollection> getLogCollectionsByEclassUuidAndUsername(String eclassUuid, String username) {
         return repository.findByEclassUuidAndUsername(eclassUuid, username);
     }
+
+    public List<LogCollection> getLogCollectionByUsername(String username) {
+        return repository.findByUsername(username);
+    }
+
 }
