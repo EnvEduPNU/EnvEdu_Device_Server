@@ -30,6 +30,12 @@ public class LogCollection {
     private String username;
 
     @DynamoDBAttribute
+    private String graphImage;
+
+    @DynamoDBAttribute
+    private String dataUUID;
+
+    @DynamoDBAttribute
     private String logCollectionStartTime;
 
     @DynamoDBAttribute
