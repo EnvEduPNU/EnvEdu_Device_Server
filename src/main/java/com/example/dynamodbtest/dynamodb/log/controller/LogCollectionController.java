@@ -48,6 +48,14 @@ public class LogCollectionController {
         return ResponseEntity.ok(logs);
     }
 
+    // Get LogCollections by username
+    @GetMapping("/get/username/{username}")
+    public ResponseEntity<List<LogCollection>> getLogsByUsername(
+            @PathVariable String username) {
+        List<LogCollection> logs = service.getLogCollectionByUsername(username);
+        return ResponseEntity.ok(logs);
+    }
+
     // Delete LogCollection by logUuid
     @DeleteMapping("/delete/{logUuid}")
     public ResponseEntity<Void> deleteLogByLogUuid(@PathVariable String logUuid) {

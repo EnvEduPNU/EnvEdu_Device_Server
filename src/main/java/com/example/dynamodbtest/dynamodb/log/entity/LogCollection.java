@@ -24,10 +24,16 @@ public class LogCollection {
     private String eclassName;
 
     @DynamoDBAttribute
-    private int stepNum;
+    private Integer stepNum;
 
     @DynamoDBAttribute
     private String username;
+
+    @DynamoDBAttribute
+    private String graphImage;
+
+    @DynamoDBAttribute
+    private String dataUUID;
 
     @DynamoDBAttribute
     private String logCollectionStartTime;
@@ -53,7 +59,7 @@ public class LogCollection {
         private String buttonName;
 
         @DynamoDBAttribute
-        private boolean actionSuccess;
+        private Boolean actionSuccess;
 
         @DynamoDBAttribute
         private String memo;
