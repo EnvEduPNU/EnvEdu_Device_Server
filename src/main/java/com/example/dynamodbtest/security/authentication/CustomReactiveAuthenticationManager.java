@@ -21,6 +21,24 @@ public class CustomReactiveAuthenticationManager implements ReactiveAuthenticati
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+//    @Override
+//    public Mono<Authentication> authenticate(Authentication authentication) throws AuthenticationException {
+//        String username = authentication.getName();
+//        String password = String.valueOf(authentication.getCredentials());
+//
+//        return userRepository.findByUsername(username)
+//                .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found: " + username))) // 아이디가 없을 때 예외 처리
+//                .flatMap(user -> {
+//                    // 저장된 해시된 비밀번호와 입력된 비밀번호 비교
+//                    if (PasswordUtils.verifyPassword(password, user.getPassword())) { // 해싱된 비밀번호 비교 메서드 사용
+//                        CustomUserDetails userDetails = new CustomUserDetails(user);
+//                        return Mono.just(new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities()));
+//                    } else {
+//                        return Mono.error(new BadCredentialsException("Invalid credentials"));
+//                    }
+//                });
+//    }
+
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
@@ -29,15 +47,16 @@ public class CustomReactiveAuthenticationManager implements ReactiveAuthenticati
         return userRepository.findByUsername(username)
                 .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found: " + username))) // 아이디가 없을 때 예외 처리
                 .flatMap(user -> {
-                    // 저장된 해시된 비밀번호와 입력된 비밀번호 비교
-                    if (PasswordUtils.verifyPassword(password, user.getPassword())) { // 해싱된 비밀번호 비교 메서드 사용
+                    // 저장된 비밀번호와 입력된 비밀번호 비교
+                    if (user.getPassword().equals(password)) { // 평문 문자열 비교
                         CustomUserDetails userDetails = new CustomUserDetails(user);
                         return Mono.just(new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities()));
                     } else {
-                        return Mono.error(new BadCredentialsException("Invalid credentials"));
+                        return Mono.error(new BadCredentialsException("Invalid credentials")); // 비밀번호 불일치 예외 처리
                     }
                 });
     }
+
 
 
 }
