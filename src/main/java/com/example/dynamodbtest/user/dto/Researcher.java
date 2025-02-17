@@ -15,7 +15,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.time.LocalDate;
 
 
-@Table("researcher")
+@Table("educator")
 @Getter
 @Setter
 @ToString
